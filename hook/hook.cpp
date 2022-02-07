@@ -39,9 +39,11 @@ struct Detour
 	void **original;
 	void *detour;
 } detours[] = {
-    {(void **)&SetSongTimeLabel, (void *)HK_SetSongTimeLabel},
-    {(void **)&PlayerWindowStateChanged, (void *)HK_PlayerWindowStateChanged},
-    {(void **)&TrackFinished, (void *)HK_TrackFinished},
+#define DETOUR(name) {(void **)&name, (void *)HK_##name}
+    DETOUR(SetSongTimeLabel),
+    DETOUR(PlayerWindowStateChanged),
+    DETOUR(TrackFinished),
+#undef DETOUR
 };
 
 void EnsureAppHandleAndCallWithApp(void (*function)(void *))
