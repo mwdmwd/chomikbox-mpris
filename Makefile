@@ -22,8 +22,8 @@ mpris-server.dll:
 
 .PHONY: clean
 clean:
-	make -C detours-unix clean
-	make -C withdll clean
-	make -C hook clean
-	make -C mpris clean
+	$(MAKE) -C detours-unix clean
+	$(MAKE) -C withdll clean
+	$(MAKE) -C hook clean
+	$(MAKE) -C mpris clean
 	rm -f *.exe *.dll
