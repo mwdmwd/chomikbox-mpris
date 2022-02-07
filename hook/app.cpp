@@ -8,6 +8,7 @@ DWORD(__thiscall *SetSongTimeLabel)
 (void *, LONGLONG) = (DWORD __thiscall(*)(void *thiz, LONGLONG millis))OFS_SET_SONG_TIME_LABEL;
 void(__thiscall *PlayerWindowStateChanged)(void *, PlayState) =
     (void __thiscall (*)(void *, PlayState))OFS_PLAYER_WINDOW_STATE_CHANGED;
+void(__thiscall *TrackFinished)(void *thiz) = (void(__thiscall *)(void *))OFS_TRACK_FINISHED;
 
 // Other "imports"
 static auto StartPlaying = (void(__thiscall *)(void *thiz))OFS_START_PLAYING;

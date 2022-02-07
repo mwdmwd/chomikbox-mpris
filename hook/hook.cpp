@@ -28,6 +28,12 @@ static void __thiscall HK_PlayerWindowStateChanged(void *thiz, PlayState state)
 	return PlayerWindowStateChanged(thiz, state);
 }
 
+static void __thiscall HK_TrackFinished(void *thiz)
+{
+	printf("track finished\n");
+	return TrackFinished(thiz);
+}
+
 struct Detour
 {
 	void **original;
@@ -35,6 +41,7 @@ struct Detour
 } detours[] = {
     {(void **)&SetSongTimeLabel, (void *)HK_SetSongTimeLabel},
     {(void **)&PlayerWindowStateChanged, (void *)HK_PlayerWindowStateChanged},
+    {(void **)&TrackFinished, (void *)HK_TrackFinished},
 };
 
 void EnsureAppHandleAndCallWithApp(void (*function)(void *))

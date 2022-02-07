@@ -22,5 +22,6 @@ void Prev(void *thiz);
 // Detour targets
 extern DWORD(__thiscall *SetSongTimeLabel)(void *thiz, LONGLONG millis);
 extern void(__thiscall *PlayerWindowStateChanged)(void *thiz, PlayState state);
+extern void (__thiscall *TrackFinished)(void *thiz);
 
 #endif
