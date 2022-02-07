@@ -101,7 +101,7 @@ struct Detour
 	void *detour;
 } detours[] = {
     {(void **)&SetSongTimeLabel, (void *)HK_SetSongTimeLabel},
-	{(void **)&PlayerWindowStateChanged, (void *)HK_PlayerWindowStateChanged},
+    {(void **)&PlayerWindowStateChanged, (void *)HK_PlayerWindowStateChanged},
 };
 
 void EnsureAppHandleAndCallWithApp(void (*function)(void *))
