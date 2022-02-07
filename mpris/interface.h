@@ -14,6 +14,8 @@ typedef enum
 	IM_PLAYPAUSE,
 	IM_SEEK,
 	IM_QUIT,
+	IM_NEXT,
+	IM_PREV,
 	IM_IMPORT_COUNT, /* must be last */
 } ServerImport;
 

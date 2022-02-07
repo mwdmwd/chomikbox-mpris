@@ -139,6 +139,20 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 			                      return 0;
 		                      });
 
+		register_import_fixme(IM_NEXT,
+		                      [](uint64_t)
+		                      {
+			                      Next(app);
+			                      return 0;
+		                      });
+
+		register_import_fixme(IM_PREV,
+		                      [](uint64_t)
+		                      {
+			                      Prev(app);
+			                      return 0;
+		                      });
+
 		CreateThread(nullptr, 0, MprisServerThread, mpsr, 0, nullptr);
 	}
 	else if(dwReason == DLL_PROCESS_DETACH)

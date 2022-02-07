@@ -16,6 +16,7 @@ static auto PlayPauseButtonClicked = (void __thiscall (*)(void *thiz))OFS_PLAY_P
 static auto PlayInternal1 = (void __thiscall (*)(void *thiz))OFS_PLAY_1;
 static auto PlayInternal2 = (void __thiscall (*)(void *thiz, int))OFS_PLAY_2;
 static auto PlayInternal3 = (void __thiscall (*)(void *thiz))OFS_PLAY_3;
+static auto NextPrev = (void __thiscall (*)(void *thiz, int previous))OFS_NEXT_PREV;
 
 PlayState GetPlayState(void *thiz)
 {
@@ -59,4 +60,14 @@ void Pause(void *thiz)
 void PlayPause(void *thiz)
 {
 	PlayPauseButtonClicked(thiz);
+}
+
+void Next(void *thiz)
+{
+	NextPrev(thiz, 0);
+}
+
+void Prev(void *thiz)
+{
+	NextPrev(thiz, 1);
 }

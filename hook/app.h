@@ -16,6 +16,8 @@ PlayState GetPlayState(void *thiz);
 void Play(void *thiz);
 void Pause(void *thiz);
 void PlayPause(void *thiz);
+void Next(void *thiz);
+void Prev(void *thiz);
 
 // Detour targets
 extern DWORD(__thiscall *SetSongTimeLabel)(void *thiz, LONGLONG millis);

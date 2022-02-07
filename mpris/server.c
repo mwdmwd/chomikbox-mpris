@@ -54,6 +54,26 @@ METHOD_HANDLER(MediaPlayer2Player, play_pause)
 	return TRUE;
 }
 
+METHOD_HANDLER(MediaPlayer2Player, next)
+{
+	printf("%s\n", __PRETTY_FUNCTION__);
+
+	call_import(IM_NEXT, 0);
+
+	media_player2_player_complete_next(interface, invocation);
+	return TRUE;
+}
+
+METHOD_HANDLER(MediaPlayer2Player, previous)
+{
+	printf("%s\n", __PRETTY_FUNCTION__);
+
+	call_import(IM_PREV, 0);
+
+	media_player2_player_complete_previous(interface, invocation);
+	return TRUE;
+}
+
 METHOD_HANDLER_EX(MediaPlayer2Player, seek, gint64 offset)
 {
 	printf("%s %" PRId64 "\n", __PRETTY_FUNCTION__, offset);
@@ -82,6 +102,8 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	SIGNAL(pause);
 	SIGNAL(play_pause);
 	SIGNAL(seek);
+	SIGNAL(next);
+	SIGNAL(previous);
 #undef SIGNAL
 	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(playerPlayer), connection,
 	                                 objectPath, NULL);
