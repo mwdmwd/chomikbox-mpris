@@ -28,7 +28,7 @@ enum class PlayState
 	Playing,
 	Buffering,
 	Paused,
-	Stopped2,
+	UnsupportedFormat,
 };
 
 static PlayState GetPlayState(void *thiz)
@@ -53,7 +53,7 @@ static void Play(void *thiz)
 			break;
 		case PlayState::Paused:
 		case PlayState::Buffering:
-		case PlayState::Stopped2:
+		case PlayState::UnsupportedFormat:
 			Play1(qObject[87]);
 			Play2(&qObject[90], 1);
 			// Play3(&qObject[90]);
