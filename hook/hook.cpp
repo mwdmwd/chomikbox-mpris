@@ -1,15 +1,3 @@
-//////////////////////////////////////////////////////////////////////////////
-//
-//  Detours Test Program (simple.cpp of simple.dll)
-//
-//  Microsoft Research Detours Package
-//
-//  Copyright (c) Microsoft Corporation.  All rights reserved.
-//
-//  This DLL will detour the Windows SleepEx API so that TimedSleep function
-//  gets called instead.  TimedSleepEx records the before and after times, and
-//  calls the real SleepEx API through the TrueSleepEx function pointer.
-//
 #include <stdio.h>
 #include <windows.h>
 
@@ -237,6 +225,3 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 	}
 	return TRUE;
 }
-
-//
-///////////////////////////////////////////////////////////////// End of File.
