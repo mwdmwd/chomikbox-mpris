@@ -19,8 +19,8 @@
 
 static void *app;
 
-static void(__fastcall *StartPlaying)(void *qObject) = (void __fastcall (*)(void *))0x004e0220;
-static void(__fastcall *PauseInternal)(void *qObject) = (void __fastcall (*)(void *))0x004e0d40;
+static void(__thiscall *StartPlaying)(void *qObject) = (void __thiscall (*)(void *))0x004e0220;
+static void(__thiscall *PauseInternal)(void *qObject) = (void __thiscall (*)(void *))0x004e0d40;
 
 enum class PlayState
 {
@@ -99,8 +99,8 @@ static void __thiscall HK_PlayerWindowStateChanged(void *thiz, PlayState state)
 	return PlayerWindowStateChanged(thiz, state);
 }
 
-static void(__fastcall *PlayPauseButtonClicked)(void *thiz) =
-    (void __fastcall (*)(void *))0x004e0180;
+static void(__thiscall *PlayPauseButtonClicked)(void *thiz) =
+    (void __thiscall (*)(void *))0x004e0180;
 
 static void PlayPause(void *app)
 {
