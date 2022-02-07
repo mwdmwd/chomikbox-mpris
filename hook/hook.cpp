@@ -61,8 +61,7 @@ DWORD WINAPI MprisServerThread(LPVOID lpParameter)
 {
 	void (*mpris_server_run)(void) = (void (*)(void))lpParameter;
 	mpris_server_run();
-
-	__builtin_unreachable();
+	return 0;
 }
 
 DWORD WINAPI QuitThreadProc(LPVOID lpParameter)
