@@ -19,8 +19,12 @@ dirs:
 $(OBJD)/%.obj: %.cpp
 	$(CXX) $(CFLAGS) -c $(addprefix -I, $(INCDS)) -o $@ $<
 
-$(BIND)/hook.dll: $(OBJD)/hook.obj
-	$(CXX) -o $@ -shared -static $(CFLAGS) -L$(LIBD) $< $(LIBS)
+$(OBJD)/hook.obj: app.h
+
+$(OBJD)/app.obj: app.h offsets.h
+
+$(BIND)/hook.dll: $(OBJD)/hook.obj $(OBJD)/app.obj
+	$(CXX) -o $@ -shared -static $(CFLAGS) -L$(LIBD) $^ $(LIBS)
 
 .PHONY: clean
 clean:

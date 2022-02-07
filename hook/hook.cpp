@@ -2,67 +2,11 @@
 #include <windows.h>
 
 #include "detours.h"
-
 #include "mpris/interface.h"
 
+#include "app.h"
+
 static void *app;
-
-static void(__thiscall *StartPlaying)(void *qObject) = (void __thiscall (*)(void *))0x004e0220;
-static void(__thiscall *PauseInternal)(void *qObject) = (void __thiscall (*)(void *))0x004e0d40;
-
-enum class PlayState
-{
-	Stopped,
-	Playing,
-	Buffering,
-	Paused,
-	UnsupportedFormat,
-};
-
-static PlayState GetPlayState(void *thiz)
-{
-	PlayState ***ppp = (PlayState ***)thiz;
-	return ppp[87][2][10];
-}
-
-static void Play(void *thiz)
-{
-	void **qObject = (void **)thiz;
-	static void(__thiscall * Play1)(void *) = (void __thiscall (*)(void *))0x005f0050;
-	static void(__thiscall * Play2)(void *, int) = (void __thiscall (*)(void *, int))0x004ef7a0;
-	static void(__thiscall * Play3)(void *) = (void __thiscall (*)(void *))0x004eb510;
-
-	PlayState state = GetPlayState(thiz);
-	printf("play: play state %d\n", state);
-	switch(state)
-	{
-		case PlayState::Stopped:
-			StartPlaying(thiz);
-			break;
-		case PlayState::Paused:
-		case PlayState::Buffering:
-		case PlayState::UnsupportedFormat:
-			Play1(qObject[87]);
-			Play2(&qObject[90], 1);
-			// Play3(&qObject[90]);
-			break;
-		default:
-			printf("Don't know how to play from state %d\n", state);
-			break;
-	}
-}
-
-static void Pause(void *thiz)
-{
-	printf("pause: play state %d\n", GetPlayState(thiz));
-	if(GetPlayState(thiz) == PlayState::Playing)
-	{
-		PauseInternal(thiz);
-	}
-}
-
-static DWORD(__thiscall *SetSongTimeLabel)(void *thiz, LONGLONG param) =
-    (DWORD __thiscall(*)(void *, LONGLONG))0x004dfbf0;
 
 DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 {
@@ -78,21 +22,10 @@ DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 	return SetSongTimeLabel(thiz, millis);
 }
 
-static void(__thiscall *PlayerWindowStateChanged)(void *thiz, PlayState state) =
-    (void __thiscall (*)(void *, PlayState))0x004e22d0;
-
 static void __thiscall HK_PlayerWindowStateChanged(void *thiz, PlayState state)
 {
 	printf("player window state changed to %d this=%08x\n", state, thiz);
 	return PlayerWindowStateChanged(thiz, state);
-}
-
-static void(__thiscall *PlayPauseButtonClicked)(void *thiz) =
-    (void __thiscall (*)(void *))0x004e0180;
-
-static void PlayPause(void *app)
-{
-	PlayPauseButtonClicked(app);
 }
 
 struct Detour
