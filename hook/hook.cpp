@@ -84,6 +84,12 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 	{
 		DetourRestoreAfterWith();
 
+		if(ResolveDynamicImports())
+		{
+			MessageBox(nullptr, "Error resolving dynamic imports", "Error", MB_ICONHAND);
+			abort();
+		}
+
 		printf("Attaching detours\n");
 		fflush(stdout);
 
@@ -158,6 +164,13 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		                      [](uint64_t)
 		                      {
 			                      Prev(app);
+			                      return 0;
+		                      });
+
+		register_import_fixme(IM_SET_VOLUME,
+		                      [](uint64_t volume)
+		                      {
+			                      SetVolume(app, volume);
 			                      return 0;
 		                      });
 

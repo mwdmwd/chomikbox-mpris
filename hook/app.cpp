@@ -10,6 +10,9 @@ void(__thiscall *PlayerWindowStateChanged)(void *, PlayState) =
     (void __thiscall (*)(void *, PlayState))OFS_PLAYER_WINDOW_STATE_CHANGED;
 void(__thiscall *TrackFinished)(void *thiz) = (void(__thiscall *)(void *))OFS_TRACK_FINISHED;
 
+// Imports to be resolved with GetProcAddress
+static void(__thiscall *QAbstractSlider_SetValue)(void *thiz, int value);
+
 // Other "imports"
 static auto StartPlaying = (void(__thiscall *)(void *thiz))OFS_START_PLAYING;
 static auto PauseInternal = (void __thiscall (*)(void *thiz))OFS_PAUSE_INTERNAL;
@@ -18,6 +21,24 @@ static auto PlayInternal1 = (void __thiscall (*)(void *thiz))OFS_PLAY_1;
 static auto PlayInternal2 = (void __thiscall (*)(void *thiz, int))OFS_PLAY_2;
 static auto PlayInternal3 = (void __thiscall (*)(void *thiz))OFS_PLAY_3;
 static auto NextPrev = (void __thiscall (*)(void *thiz, int previous))OFS_NEXT_PREV;
+
+int ResolveDynamicImports(void)
+{
+#define REQUIRE(x)                                                                                 \
+	({                                                                                             \
+		auto x_ = (x);                                                                             \
+		if(!x_)                                                                                    \
+			return 1;                                                                              \
+		x_;                                                                                        \
+	})
+
+	HMODULE qtGui4 = REQUIRE(GetModuleHandle("qtgui4.dll"));
+	QAbstractSlider_SetValue = (void(__thiscall *)(void *, int))REQUIRE(
+	    GetProcAddress(qtGui4, "?setValue@QAbstractSlider@@QAEXH@Z"));
+
+#undef REQUIRE
+	return 0;
+}
 
 PlayState GetPlayState(void *thiz)
 {
@@ -71,4 +92,10 @@ void Next(void *thiz)
 void Prev(void *thiz)
 {
 	NextPrev(thiz, 1);
+}
+
+void SetVolume(void *thiz, int volume)
+{
+	void **qObject = (void **)thiz;
+	QAbstractSlider_SetValue(qObject[58], volume);
 }

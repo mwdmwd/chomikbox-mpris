@@ -12,12 +12,15 @@ enum class PlayState
 	UnsupportedFormat,
 };
 
+int ResolveDynamicImports(void);
+
 PlayState GetPlayState(void *thiz);
 void Play(void *thiz);
 void Pause(void *thiz);
 void PlayPause(void *thiz);
 void Next(void *thiz);
 void Prev(void *thiz);
+void SetVolume(void *thiz, int volume);
 
 // Detour targets
 extern DWORD(__thiscall *SetSongTimeLabel)(void *thiz, LONGLONG millis);

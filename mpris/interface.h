@@ -16,6 +16,7 @@ typedef enum
 	IM_QUIT,
 	IM_NEXT,
 	IM_PREV,
+	IM_SET_VOLUME,
 	IM_IMPORT_COUNT, /* must be last */
 } ServerImport;
 

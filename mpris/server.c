@@ -84,6 +84,11 @@ METHOD_HANDLER_EX(MediaPlayer2Player, seek, gint64 offset)
 	return TRUE;
 }
 
+static void change_volume(MediaPlayer2Player *interface, GParamSpec *pspec)
+{
+	call_import(IM_SET_VOLUME, media_player2_player_get_volume(interface) * 100);
+}
+
 void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user_data)
 {
 	printf("name acquired, name='%s'\n", name);
@@ -105,6 +110,12 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	SIGNAL(next);
 	SIGNAL(previous);
 #undef SIGNAL
+
+#define NOTIFY(name)                                                                               \
+	g_signal_connect(playerPlayer, "notify::" #name, G_CALLBACK(change_##name), NULL)
+	NOTIFY(volume);
+#undef NOTIFY
+
 	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(playerPlayer), connection,
 	                                 objectPath, NULL);
 }
