@@ -39,7 +39,10 @@ struct Detour
 	void **original;
 	void *detour;
 } detours[] = {
-#define DETOUR(name) {(void **)&name, (void *)HK_##name}
+#define DETOUR(name)                                                                               \
+	{                                                                                              \
+		(void **)&name, (void *)HK_##name                                                          \
+	}
     DETOUR(SetSongTimeLabel),
     DETOUR(PlayerWindowStateChanged),
     DETOUR(TrackFinished),
