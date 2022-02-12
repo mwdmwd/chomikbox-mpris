@@ -7,6 +7,12 @@
 #include "mpris.h"
 
 static char const *objectPath = "/org/mpris/MediaPlayer2";
+// Copied from VLC's org/mpris/MediaPlayer2 object
+static gchar const *supportedMimeTypes[] = {"audio/mpeg",      "audio/x-mpeg", "audio/mp4",
+                                            "application/ogg", "audio/wav",    "audio/x-wav",
+                                            "audio/3gpp",      "audio/3gpp2",  "audio/x-matroska"};
+static gchar const *supportedUriSchemes[] = {"file"};
+static gchar const *playerIdentity = "ChomikBox";
 
 #define METHOD_HANDLER(iface, method)                                                              \
 	static gboolean handle_##method(iface *interface, GDBusMethodInvocation *invocation)
@@ -97,6 +103,10 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 #define SIGNAL(name) g_signal_connect(player, "handle-" #name, G_CALLBACK(handle_##name), NULL)
 	SIGNAL(quit);
 #undef SIGNAL
+
+	media_player2_set_supported_mime_types(player, supportedMimeTypes);
+	media_player2_set_supported_uri_schemes(player, supportedUriSchemes);
+	media_player2_set_identity(player, playerIdentity);
 	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(player), connection, objectPath,
 	                                 NULL);
 
@@ -115,6 +125,13 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	g_signal_connect(playerPlayer, "notify::" #name, G_CALLBACK(change_##name), NULL)
 	NOTIFY(volume);
 #undef NOTIFY
+
+	media_player2_player_set_can_control(playerPlayer, TRUE);
+	media_player2_player_set_can_seek(playerPlayer, TRUE);
+	media_player2_player_set_can_go_next(playerPlayer, TRUE);     // FIXME
+	media_player2_player_set_can_go_previous(playerPlayer, TRUE); // FIXME
+	media_player2_player_set_can_pause(playerPlayer, TRUE);
+	media_player2_player_set_can_play(playerPlayer, TRUE); // FIXME?
 
 	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(playerPlayer), connection,
 	                                 objectPath, NULL);
