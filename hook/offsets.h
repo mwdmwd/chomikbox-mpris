@@ -12,5 +12,6 @@
 #define OFS_PLAY_PAUSE_BUTTON_CLICKED ((void *)(EXE_BASE + 0x000e0180))
 #define OFS_NEXT_PREV ((void *)(EXE_BASE + 0x000e1080))
 #define OFS_TRACK_FINISHED ((void *)(EXE_BASE + 0x000e1060))
+#define OFS_TRACK_CHANGED ((void *)(EXE_BASE + 0x001f0310))
 
 #endif

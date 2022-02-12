@@ -34,6 +34,14 @@ static void __thiscall HK_TrackFinished(void *thiz)
 	return TrackFinished(thiz);
 }
 
+static void __thiscall HK_TrackChanged(void *thiz, void *qUrl)
+{
+	std::string name = GetFileName(qUrl);
+	printf("track changed to '%s'\n", name.c_str());
+
+	return TrackChanged(thiz, qUrl);
+}
+
 struct Detour
 {
 	void **original;
@@ -46,6 +54,7 @@ struct Detour
     DETOUR(SetSongTimeLabel),
     DETOUR(PlayerWindowStateChanged),
     DETOUR(TrackFinished),
+	DETOUR(TrackChanged),
 #undef DETOUR
 };
 
