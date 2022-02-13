@@ -67,10 +67,15 @@ int ResolveDynamicImports(void)
 	return 0;
 }
 
+void *GetQGStreamer(void *playerWindow)
+{
+	return ((void **)playerWindow)[87];
+}
+
 PlayState GetPlayState(void *thiz)
 {
-	PlayState ***ppp = (PlayState ***)thiz;
-	return ppp[87][2][10];
+	PlayState **pp = (PlayState **)GetQGStreamer(thiz);
+	return pp[2][10];
 }
 
 void Play(void *thiz)
@@ -87,7 +92,7 @@ void Play(void *thiz)
 		case PlayState::Paused:
 		case PlayState::Buffering:
 		case PlayState::UnsupportedFormat:
-			PlayInternal1(qObject[87]);
+			PlayInternal1(GetQGStreamer(thiz));
 			PlayInternal2(&qObject[90], 1);
 			// PlayInternal3(&qObject[90]);
 			break;
