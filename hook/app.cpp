@@ -72,10 +72,15 @@ void *GetQGStreamer(void *playerWindow)
 	return ((void **)playerWindow)[87];
 }
 
+void *GetQGStreamerPrivate(void *playerWindow)
+{
+	return ((void **)GetQGStreamer(playerWindow))[2];
+}
+
 PlayState GetPlayState(void *thiz)
 {
-	PlayState **pp = (PlayState **)GetQGStreamer(thiz);
-	return pp[2][10];
+	PlayState *pp = (PlayState *)GetQGStreamerPrivate(thiz);
+	return pp[10];
 }
 
 void Play(void *thiz)
