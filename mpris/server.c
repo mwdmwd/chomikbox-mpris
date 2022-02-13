@@ -14,6 +14,9 @@ static gchar const *supportedMimeTypes[] = {"audio/mpeg",      "audio/x-mpeg", "
 static gchar const *supportedUriSchemes[] = {"file"};
 static gchar const *playerIdentity = "ChomikBox";
 
+static MediaPlayer2 *player;
+static MediaPlayer2Player *playerPlayer;
+
 #define METHOD_HANDLER(iface, method)                                                              \
 	static gboolean handle_##method(iface *interface, GDBusMethodInvocation *invocation)
 #define METHOD_HANDLER_EX(iface, method, ...)                                                      \
@@ -99,7 +102,7 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 {
 	printf("name acquired, name='%s'\n", name);
 
-	MediaPlayer2 *player = media_player2_skeleton_new();
+	player = media_player2_skeleton_new();
 #define SIGNAL(name) g_signal_connect(player, "handle-" #name, G_CALLBACK(handle_##name), NULL)
 	SIGNAL(quit);
 #undef SIGNAL
@@ -110,7 +113,7 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(player), connection, objectPath,
 	                                 NULL);
 
-	MediaPlayer2Player *playerPlayer = media_player2_player_skeleton_new();
+	playerPlayer = media_player2_player_skeleton_new();
 #define SIGNAL(name)                                                                               \
 	g_signal_connect(playerPlayer, "handle-" #name, G_CALLBACK(handle_##name), NULL)
 	SIGNAL(play);
@@ -137,8 +140,21 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	                                 objectPath, NULL);
 }
 
+void title_changed(char const *title)
+{
+	GVariantBuilder b;
+	g_variant_builder_init(&b, G_VARIANT_TYPE("a{sv}"));
+	g_variant_builder_add(&b, "{sv}", "mpris:trackid", g_variant_new_object_path("/playlist/1"));
+	g_variant_builder_add(&b, "{sv}", "xesam:title", g_variant_new_string(title));
+	media_player2_player_set_metadata(playerPlayer, g_variant_builder_end(&b));
+}
+
 void mpris_server_run(void)
 {
+	set_callbacks(&(ServerCallbacks){
+	    .title_changed = title_changed,
+	});
+
 	guint ownerId =
 	    g_bus_own_name(G_BUS_TYPE_SESSION, "org.mpris.MediaPlayer2.chomikbox",
 	                   G_BUS_NAME_OWNER_FLAGS_NONE, NULL, name_acquired, NULL, NULL, NULL);

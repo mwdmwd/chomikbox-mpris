@@ -20,10 +20,18 @@ typedef enum
 	IM_IMPORT_COUNT, /* must be last */
 } ServerImport;
 
+typedef struct
+{
+	void (*title_changed)(char const *title);
+} ServerCallbacks;
+
 typedef int (*mpris_server_import)(uint64_t arg);
 
 void register_import(ServerImport index, mpris_server_import function);
 void call_import(ServerImport index, uint64_t arg);
+
+ServerCallbacks *get_callbacks(void);
+void set_callbacks(ServerCallbacks *cbs);
 
 #ifdef __cplusplus
 }

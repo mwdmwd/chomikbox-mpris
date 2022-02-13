@@ -4,6 +4,7 @@
 #include "interface.h"
 
 static mpris_server_import imports[IM_IMPORT_COUNT];
+static ServerCallbacks callbacks;
 
 void register_import(ServerImport index, mpris_server_import function)
 {
@@ -20,4 +21,14 @@ void call_import(ServerImport index, uint64_t arg)
 		import(arg);
 	else
 		printf("Call to unregistered import %d\n", index);
+}
+
+ServerCallbacks *get_callbacks(void)
+{
+	return &callbacks;
+}
+
+void set_callbacks(ServerCallbacks *cbs)
+{
+	callbacks = *cbs;
 }

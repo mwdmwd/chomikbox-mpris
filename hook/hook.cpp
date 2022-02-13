@@ -7,6 +7,7 @@
 #include "app.h"
 
 static void *app;
+static ServerCallbacks *callbacks;
 
 DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 {
@@ -37,8 +38,7 @@ static void __thiscall HK_TrackFinished(void *thiz)
 static void __thiscall HK_TrackChanged(void *thiz, void *qUrl)
 {
 	std::string name = GetFileName(qUrl);
-	printf("track changed to '%s'\n", name.c_str());
-
+	callbacks->title_changed(name.c_str());
 	return TrackChanged(thiz, qUrl);
 }
 
@@ -131,6 +131,10 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 			MessageBox(nullptr, "Error getting procedure", "Error", MB_ICONHAND);
 			abort();
 		}
+
+		ServerCallbacks *(*get_callbacks)(void) =
+		    (ServerCallbacks * (*)(void)) GetProcAddress(mprisServer, "get_callbacks");
+		callbacks = get_callbacks();
 
 		void (*register_import_fixme)(ServerImport, int (*)(uint64_t)) =
 		    (void (*)(ServerImport, int (*)(uint64_t)))GetProcAddress(mprisServer,
