@@ -31,6 +31,7 @@ typedef struct
 {
 	void (*title_changed)(char const *title);
 	void (*duration_changed)(int64_t duration);
+	void (*position_changed)(int64_t position);
 	void (*state_changed)(PlayState state);
 } ServerCallbacks;
 

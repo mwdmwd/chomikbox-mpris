@@ -186,6 +186,11 @@ void duration_changed(int64_t duration)
 	send_metadata();
 }
 
+void position_changed(int64_t position)
+{
+	media_player2_player_set_position(playerPlayer, position);
+}
+
 void state_changed(PlayState state)
 {
 	media_player2_player_set_playback_status(playerPlayer, playbackStatusNames[state]);
@@ -196,6 +201,7 @@ void mpris_server_run(void)
 	set_callbacks(&(ServerCallbacks){
 	    .title_changed = title_changed,
 	    .duration_changed = duration_changed,
+	    .position_changed = position_changed,
 	    .state_changed = state_changed,
 	});
 

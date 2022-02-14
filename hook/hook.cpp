@@ -17,9 +17,7 @@ DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 		app = thiz;
 	}
 
-	LONGLONG seconds = millis / 1000;
-	printf("%08x %016llx %02lld:%02lld\n", thiz, millis, seconds / 60, seconds % 60);
-
+	callbacks->position_changed(millis * 1000); // millis to micros
 	return SetSongTimeLabel(thiz, millis);
 }
 
