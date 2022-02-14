@@ -26,7 +26,7 @@ static auto PauseInternal = (void __thiscall (*)(void *thiz))OFS_PAUSE_INTERNAL;
 static auto PlayPauseButtonClicked = (void __thiscall (*)(void *thiz))OFS_PLAY_PAUSE_BUTTON_CLICKED;
 static auto PlayInternal1 = (void __thiscall (*)(void *thiz))OFS_PLAY_1;
 static auto PlayInternal2 = (void __thiscall (*)(void *thiz, int))OFS_PLAY_2;
-static auto PlayInternal3 = (void __thiscall (*)(void *thiz))OFS_PLAY_3;
+static auto PlayInternal3 = (void __thiscall (*)(void *thiz, void *that))OFS_PLAY_3;
 static auto NextPrev = (void __thiscall (*)(void *thiz, int previous))OFS_NEXT_PREV;
 static auto SeekInternal = (void __thiscall (*)(void *thiz, int position))OFS_SEEK;
 
@@ -110,7 +110,7 @@ void Play(void *thiz)
 		case AppPlayState::UnsupportedFormat:
 			PlayInternal1(GetQGStreamer(thiz));
 			PlayInternal2(&qObject[90], 1);
-			// PlayInternal3(&qObject[90]);
+			PlayInternal3(&qObject[88], qObject[90]);
 			break;
 		default:
 			printf("Don't know how to play from state %d\n", state);
