@@ -20,6 +20,13 @@ typedef enum
 	IM_IMPORT_COUNT, /* must be last */
 } ServerImport;
 
+typedef enum
+{
+	PS_STOPPED,
+	PS_PLAYING,
+	PS_PAUSED,
+} PlayState;
+
 typedef struct
 {
 	void (*title_changed)(char const *title);

@@ -14,6 +14,9 @@ static gchar const *supportedMimeTypes[] = {"audio/mpeg",      "audio/x-mpeg", "
 static gchar const *supportedUriSchemes[] = {"file"};
 static gchar const *playerIdentity = "ChomikBox";
 
+static char const *playbackStatusNames[] = {
+    [PS_STOPPED] = "Stopped", [PS_PAUSED] = "Paused", [PS_PLAYING] = "Playing"};
+
 static MediaPlayer2 *player;
 static MediaPlayer2Player *playerPlayer;
 
@@ -121,6 +124,12 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	media_player2_player_set_can_go_previous(playerPlayer, TRUE); // FIXME
 	media_player2_player_set_can_pause(playerPlayer, TRUE);
 	media_player2_player_set_can_play(playerPlayer, TRUE); // FIXME?
+	media_player2_player_set_minimum_rate(playerPlayer, 1.0);
+	media_player2_player_set_maximum_rate(playerPlayer, 1.0);
+	media_player2_player_set_rate(playerPlayer, 1.0);
+	media_player2_player_set_loop_status(playerPlayer, "None");
+	media_player2_player_set_playback_status(playerPlayer, playbackStatusNames[PS_STOPPED]);
+	media_player2_player_set_volume(playerPlayer, 0.25); // FIXME
 
 #define SIGNAL(name)                                                                               \
 	g_signal_connect(playerPlayer, "handle-" #name, G_CALLBACK(handle_##name), NULL)
