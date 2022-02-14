@@ -77,42 +77,42 @@ int ResolveDynamicImports(void)
 	return 0;
 }
 
-void *GetQGStreamer(void *playerWindow)
+static void *GetQGStreamer(void *playerWindow)
 {
 	return ((void **)playerWindow)[87];
 }
 
-void *GetQGStreamerPrivate(void *playerWindow)
+static void *GetQGStreamerPrivate(void *playerWindow)
 {
 	return ((void **)GetQGStreamer(playerWindow))[2];
 }
 
-AppPlayState GetPlayState(void *thiz)
+AppPlayState GetPlayState(void *player)
 {
-	AppPlayState *pp = (AppPlayState *)GetQGStreamerPrivate(thiz);
+	AppPlayState *pp = (AppPlayState *)GetQGStreamerPrivate(player);
 	return pp[10];
 }
 
-void *GetGstElement(void *qGStreamerPrivate)
+static void *GetGstElement(void *qGStreamerPrivate)
 {
 	return ((void **)qGStreamerPrivate)[2];
 }
 
-void Play(void *thiz)
+void Play(void *player)
 {
-	void **qObject = (void **)thiz;
+	void **qObject = (void **)player;
 
-	AppPlayState state = GetPlayState(thiz);
+	AppPlayState state = GetPlayState(player);
 	printf("play: play state %d\n", (int)state);
 	switch(state)
 	{
 		case AppPlayState::Stopped:
-			StartPlaying(thiz);
+			StartPlaying(player);
 			break;
 		case AppPlayState::Paused:
 		case AppPlayState::Buffering:
 		case AppPlayState::UnsupportedFormat:
-			PlayInternal1(GetQGStreamer(thiz));
+			PlayInternal1(GetQGStreamer(player));
 			PlayInternal2(&qObject[90], 1);
 			PlayInternal3(&qObject[88], qObject[90]);
 			break;
@@ -122,33 +122,33 @@ void Play(void *thiz)
 	}
 }
 
-void Pause(void *thiz)
+void Pause(void *player)
 {
-	printf("pause: play state %d\n", (int)GetPlayState(thiz));
-	if(GetPlayState(thiz) == AppPlayState::Playing)
+	printf("pause: play state %d\n", (int)GetPlayState(player));
+	if(GetPlayState(player) == AppPlayState::Playing)
 	{
-		PauseInternal(thiz);
+		PauseInternal(player);
 	}
 }
 
-void PlayPause(void *thiz)
+void PlayPause(void *player)
 {
-	PlayPauseButtonClicked(thiz);
+	PlayPauseButtonClicked(player);
 }
 
-void Next(void *thiz)
+void Next(void *player)
 {
-	NextPrev(thiz, 0);
+	NextPrev(player, 0);
 }
 
-void Prev(void *thiz)
+void Prev(void *player)
 {
-	NextPrev(thiz, 1);
+	NextPrev(player, 1);
 }
 
-void SetVolume(void *thiz, int volume)
+void SetVolume(void *player, int volume)
 {
-	void **qObject = (void **)thiz;
+	void **qObject = (void **)player;
 	QAbstractSlider_SetValue(qObject[58], volume);
 }
 
@@ -187,9 +187,9 @@ int64_t GetDuration(void *qGStreamerPrivate)
 	return duration;
 }
 
-void Seek(void *thiz, int32_t position)
+void Seek(void *player, int32_t position)
 {
-	SeekInternal(GetQGStreamerPrivate(thiz), position);
+	SeekInternal(GetQGStreamerPrivate(player), position);
 }
 
 void CloseApplication(void *application)

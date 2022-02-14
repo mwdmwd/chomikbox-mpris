@@ -16,16 +16,16 @@ enum class AppPlayState
 
 int ResolveDynamicImports(void);
 
-AppPlayState GetPlayState(void *thiz);
-void Play(void *thiz);
-void Pause(void *thiz);
-void PlayPause(void *thiz);
-void Next(void *thiz);
-void Prev(void *thiz);
-void SetVolume(void *thiz, int volume);
+AppPlayState GetPlayState(void *player);
+void Play(void *player);
+void Pause(void *player);
+void PlayPause(void *player);
+void Next(void *player);
+void Prev(void *player);
+void SetVolume(void *player, int volume);
 std::string GetFileName(void *qUrl);
-int64_t GetDuration(void *thiz);
-void Seek(void *thiz, int32_t position);
+int64_t GetDuration(void *qGStremerPrivate);
+void Seek(void *player, int32_t position);
 void CloseApplication(void *application);
 
 // Detour targets
