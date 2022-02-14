@@ -13,11 +13,13 @@ void(__thiscall *PlayerWindowStateChanged)(void *, AppPlayState) =
 void(__thiscall *TrackFinished)(void *thiz) = (void(__thiscall *)(void *))OFS_TRACK_FINISHED;
 void(__thiscall *TrackChanged)(void *thiz,
                                void *qUrl) = (void(__thiscall *)(void *, void *))OFS_TRACK_CHANGED;
+void(__thiscall *QueryDuration)(void *thiz) = (void(__thiscall *)(void *))OFS_QUERY_DURATION;
 
 // Imports to be resolved with GetProcAddress
 static void(__thiscall *QAbstractSlider_SetValue)(void *thiz, int value);
 static void(__thiscall *QUrl_fileName)(void *thiz, QString *outStr);
 static void(__thiscall *QString_dtor)(QString *thiz);
+static int (*gst_element_query_duration)(void *element, int *format, int64_t *duration);
 
 // Other "imports"
 static auto StartPlaying = (void(__thiscall *)(void *thiz))OFS_START_PLAYING;
@@ -63,6 +65,10 @@ int ResolveDynamicImports(void)
 	QString_dtor =
 	    (void(__thiscall *)(QString *))REQUIRE(GetProcAddress(qtCore4, "??1QString@@QAE@XZ"));
 
+	HMODULE gstreamer = REQUIRE(GetModuleHandle("libgstreamer-0.10.dll"));
+	gst_element_query_duration = (int (*)(void *, int *, int64_t *))REQUIRE(
+	    GetProcAddress(gstreamer, "gst_element_query_duration"));
+
 #undef REQUIRE
 	return 0;
 }
@@ -81,6 +87,11 @@ AppPlayState GetPlayState(void *thiz)
 {
 	AppPlayState *pp = (AppPlayState *)GetQGStreamerPrivate(thiz);
 	return pp[10];
+}
+
+void *GetGstElement(void *qGStreamerPrivate)
+{
+	return ((void **)qGStreamerPrivate)[2];
 }
 
 void Play(void *thiz)
@@ -161,4 +172,13 @@ std::string GetFileName(void *qUrl)
 	}
 
 	return out;
+}
+
+int64_t GetDuration(void *qGStreamerPrivate)
+{
+	void *element = GetGstElement(qGStreamerPrivate);
+	int format = 3;
+	int64_t duration;
+	gst_element_query_duration(element, &format, &duration);
+	return duration;
 }

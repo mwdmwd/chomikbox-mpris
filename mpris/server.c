@@ -20,6 +20,14 @@ static char const *playbackStatusNames[] = {
 static MediaPlayer2 *player;
 static MediaPlayer2Player *playerPlayer;
 
+static struct
+{
+	char const *title;
+	int64_t duration;
+} track = {
+    .duration = -1,
+};
+
 #define METHOD_HANDLER(iface, method)                                                              \
 	static gboolean handle_##method(iface *interface, GDBusMethodInvocation *invocation)
 #define METHOD_HANDLER_EX(iface, method, ...)                                                      \
@@ -150,19 +158,38 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	                                 objectPath, NULL);
 }
 
-void title_changed(char const *title)
+void send_metadata(void)
 {
 	GVariantBuilder b;
 	g_variant_builder_init(&b, G_VARIANT_TYPE("a{sv}"));
 	g_variant_builder_add(&b, "{sv}", "mpris:trackid", g_variant_new_object_path("/playlist/1"));
-	g_variant_builder_add(&b, "{sv}", "xesam:title", g_variant_new_string(title));
+	g_variant_builder_add(&b, "{sv}", "xesam:title", g_variant_new_string(track.title));
+	if(track.duration >= 0)
+		g_variant_builder_add(&b, "{sv}", "xesam:duration", g_variant_new_int64(track.duration));
 	media_player2_player_set_metadata(playerPlayer, g_variant_builder_end(&b));
+}
+
+void title_changed(char const *title)
+{
+	free((char *)track.title);
+
+	track.title = strdup(title);
+	track.duration = -1;
+
+	send_metadata();
+}
+
+void duration_changed(int64_t duration)
+{
+	track.duration = duration;
+	send_metadata();
 }
 
 void mpris_server_run(void)
 {
 	set_callbacks(&(ServerCallbacks){
 	    .title_changed = title_changed,
+	    .duration_changed = duration_changed,
 	});
 
 	guint ownerId =

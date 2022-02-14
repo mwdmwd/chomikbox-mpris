@@ -13,5 +13,6 @@
 #define OFS_NEXT_PREV ((void *)(EXE_BASE + 0x000e1080))
 #define OFS_TRACK_FINISHED ((void *)(EXE_BASE + 0x000e1060))
 #define OFS_TRACK_CHANGED ((void *)(EXE_BASE + 0x001f0310))
+#define OFS_QUERY_DURATION ((void *)(EXE_BASE + 0x001f2050))
 
 #endif

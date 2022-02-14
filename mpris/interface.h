@@ -30,6 +30,7 @@ typedef enum
 typedef struct
 {
 	void (*title_changed)(char const *title);
+	void (*duration_changed)(int64_t duration);
 } ServerCallbacks;
 
 typedef int (*mpris_server_import)(uint64_t arg);

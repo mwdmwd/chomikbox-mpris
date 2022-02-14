@@ -10,6 +10,7 @@ PKG_CONFIG = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
 
 CFLAGS += -m32 -std=c99 -fpic
 CFLAGS += $(shell $(PKG_CONFIG) --cflags glib-2.0 gio-2.0 gio-unix-2.0)
+CFLAGS += -D_XOPEN_SOURCE=500
 
 LIBS = $(shell $(PKG_CONFIG) --libs glib-2.0 gio-2.0 gio-unix-2.0)
 

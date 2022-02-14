@@ -42,6 +42,12 @@ static void __thiscall HK_TrackChanged(void *thiz, void *qUrl)
 	return TrackChanged(thiz, qUrl);
 }
 
+static void __thiscall HK_QueryDuration(void *thiz)
+{
+	callbacks->duration_changed(GetDuration(thiz) / 1000); // nanos to micros
+	QueryDuration(thiz);
+}
+
 struct Detour
 {
 	void **original;
@@ -51,10 +57,9 @@ struct Detour
 	{                                                                                              \
 		(void **)&name, (void *)HK_##name                                                          \
 	}
-    DETOUR(SetSongTimeLabel),
-    DETOUR(PlayerWindowStateChanged),
-    DETOUR(TrackFinished),
-	DETOUR(TrackChanged),
+    DETOUR(SetSongTimeLabel), DETOUR(PlayerWindowStateChanged),
+    DETOUR(TrackFinished),    DETOUR(TrackChanged),
+    DETOUR(QueryDuration),
 #undef DETOUR
 };
 
