@@ -20,6 +20,8 @@ static char const *playbackStatusNames[] = {
 static MediaPlayer2 *player;
 static MediaPlayer2Player *playerPlayer;
 
+extern ServerImports imports;
+
 static struct
 {
 	char const *title;
@@ -38,7 +40,7 @@ METHOD_HANDLER(MediaPlayer2, quit)
 {
 	printf("%s\n", __PRETTY_FUNCTION__);
 
-	call_import(IM_QUIT, 0);
+	imports.quit();
 
 	media_player2_complete_quit(interface, invocation);
 	return TRUE;
@@ -48,7 +50,7 @@ METHOD_HANDLER(MediaPlayer2Player, play)
 {
 	printf("%s\n", __PRETTY_FUNCTION__);
 
-	call_import(IM_PLAY, 0);
+	imports.play();
 
 	media_player2_player_complete_play(interface, invocation);
 	return TRUE;
@@ -58,7 +60,7 @@ METHOD_HANDLER(MediaPlayer2Player, pause)
 {
 	printf("%s\n", __PRETTY_FUNCTION__);
 
-	call_import(IM_PAUSE, 0);
+	imports.pause();
 
 	media_player2_player_complete_pause(interface, invocation);
 	return TRUE;
@@ -68,7 +70,7 @@ METHOD_HANDLER(MediaPlayer2Player, play_pause)
 {
 	printf("%s\n", __PRETTY_FUNCTION__);
 
-	call_import(IM_PLAYPAUSE, 0);
+	imports.play_pause();
 
 	media_player2_player_complete_play_pause(interface, invocation);
 	return TRUE;
@@ -78,7 +80,7 @@ METHOD_HANDLER(MediaPlayer2Player, next)
 {
 	printf("%s\n", __PRETTY_FUNCTION__);
 
-	call_import(IM_NEXT, 0);
+	imports.next();
 
 	media_player2_player_complete_next(interface, invocation);
 	return TRUE;
@@ -88,7 +90,7 @@ METHOD_HANDLER(MediaPlayer2Player, previous)
 {
 	printf("%s\n", __PRETTY_FUNCTION__);
 
-	call_import(IM_PREV, 0);
+	imports.prev();
 
 	media_player2_player_complete_previous(interface, invocation);
 	return TRUE;
@@ -98,7 +100,7 @@ METHOD_HANDLER_EX(MediaPlayer2Player, seek, gint64 offset)
 {
 	printf("%s %" PRId64 "\n", __PRETTY_FUNCTION__, offset);
 
-	call_import(IM_SEEK, offset);
+	imports.seek(offset);
 
 	media_player2_player_complete_seek(interface, invocation);
 	return TRUE;
@@ -106,7 +108,7 @@ METHOD_HANDLER_EX(MediaPlayer2Player, seek, gint64 offset)
 
 static void change_volume(MediaPlayer2Player *interface, GParamSpec *pspec)
 {
-	call_import(IM_SET_VOLUME, media_player2_player_get_volume(interface) * 100);
+	imports.set_volume(media_player2_player_get_volume(interface) * 100);
 }
 
 void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user_data)

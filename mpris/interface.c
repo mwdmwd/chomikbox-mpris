@@ -3,24 +3,12 @@
 
 #include "interface.h"
 
-static mpris_server_import imports[IM_IMPORT_COUNT];
+ServerImports imports;
 static ServerCallbacks callbacks;
 
-void register_import(ServerImport index, mpris_server_import function)
+void set_imports(ServerImports *imps)
 {
-	assert(index >= 0 && index < IM_IMPORT_COUNT);
-	imports[index] = function;
-}
-
-void call_import(ServerImport index, uint64_t arg)
-{
-	assert(index >= 0 && index < IM_IMPORT_COUNT);
-
-	mpris_server_import import = imports[index];
-	if(import)
-		import(arg);
-	else
-		printf("Call to unregistered import %d\n", index);
+	imports = *imps;
 }
 
 ServerCallbacks *get_callbacks(void)

@@ -8,6 +8,7 @@
 
 static void *app;
 static ServerCallbacks *callbacks;
+static ServerImports imports;
 
 DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 {
@@ -141,59 +142,21 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		    (ServerCallbacks * (*)(void)) GetProcAddress(mprisServer, "get_callbacks");
 		callbacks = get_callbacks();
 
-		void (*register_import_fixme)(ServerImport, int (*)(uint64_t)) =
-		    (void (*)(ServerImport, int (*)(uint64_t)))GetProcAddress(mprisServer,
-		                                                              "register_import");
+		imports.play = []() { EnsureAppHandleAndCallWithApp(Play); };
+		imports.pause = []() { EnsureAppHandleAndCallWithApp(Pause); };
+		imports.play_pause = []() { EnsureAppHandleAndCallWithApp(PlayPause); };
+		imports.quit = []()
+		{
+			// FIXME use proper quit
+			CreateThread(nullptr, 0, QuitThreadProc, nullptr, 0, nullptr);
+		};
+		imports.next = []() { Next(app); };
+		imports.prev = []() { Prev(app); };
+		imports.set_volume = [](int32_t volume) { SetVolume(app, volume); };
 
-		register_import_fixme(IM_PLAY,
-		                      [](uint64_t)
-		                      {
-			                      EnsureAppHandleAndCallWithApp(Play);
-			                      return 0;
-		                      });
-
-		register_import_fixme(IM_PAUSE,
-		                      [](uint64_t)
-		                      {
-			                      EnsureAppHandleAndCallWithApp(Pause);
-			                      return 0;
-		                      });
-
-		register_import_fixme(IM_PLAYPAUSE,
-		                      [](uint64_t)
-		                      {
-			                      EnsureAppHandleAndCallWithApp(PlayPause);
-			                      return 0;
-		                      });
-
-		register_import_fixme(IM_QUIT,
-		                      [](uint64_t)
-		                      {
-			                      // FIXME use proper quit
-			                      CreateThread(nullptr, 0, QuitThreadProc, nullptr, 0, nullptr);
-			                      return 0;
-		                      });
-
-		register_import_fixme(IM_NEXT,
-		                      [](uint64_t)
-		                      {
-			                      Next(app);
-			                      return 0;
-		                      });
-
-		register_import_fixme(IM_PREV,
-		                      [](uint64_t)
-		                      {
-			                      Prev(app);
-			                      return 0;
-		                      });
-
-		register_import_fixme(IM_SET_VOLUME,
-		                      [](uint64_t volume)
-		                      {
-			                      SetVolume(app, volume);
-			                      return 0;
-		                      });
+		void (*set_imports)(ServerImports * imports) =
+		    (void (*)(ServerImports *))GetProcAddress(mprisServer, "set_imports");
+		set_imports(&imports);
 
 		CreateThread(nullptr, 0, MprisServerThread, mpsr, 0, nullptr);
 	}

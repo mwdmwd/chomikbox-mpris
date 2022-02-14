@@ -7,18 +7,17 @@ extern "C" {
 
 #include <stdint.h>
 
-typedef enum
+typedef struct
 {
-	IM_PLAY,
-	IM_PAUSE,
-	IM_PLAYPAUSE,
-	IM_SEEK,
-	IM_QUIT,
-	IM_NEXT,
-	IM_PREV,
-	IM_SET_VOLUME,
-	IM_IMPORT_COUNT, /* must be last */
-} ServerImport;
+	void (*play)(void);
+	void (*pause)(void);
+	void (*play_pause)(void);
+	void (*seek)(int64_t position);
+	void (*quit)(void);
+	void (*next)(void);
+	void (*prev)(void);
+	void (*set_volume)(int32_t volume);
+} ServerImports;
 
 typedef enum
 {
@@ -35,10 +34,7 @@ typedef struct
 	void (*state_changed)(PlayState state);
 } ServerCallbacks;
 
-typedef int (*mpris_server_import)(uint64_t arg);
-
-void register_import(ServerImport index, mpris_server_import function);
-void call_import(ServerImport index, uint64_t arg);
+void set_imports(ServerImports *imps);
 
 ServerCallbacks *get_callbacks(void);
 void set_callbacks(ServerCallbacks *cbs);
