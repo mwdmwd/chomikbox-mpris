@@ -117,11 +117,11 @@ METHOD_HANDLER_EX(MediaPlayer2Player, seek, gint64 offset)
 	return TRUE;
 }
 
-METHOD_HANDLER_EX(MediaPlayer2Player, set_position, gchar const *trackId, gint64 offset)
+METHOD_HANDLER_EX(MediaPlayer2Player, set_position, gchar const *trackId, gint64 position)
 {
-	printf("%s %s %" PRId64 "\n", __PRETTY_FUNCTION__, trackId, offset);
+	printf("%s %s %" PRId64 "\n", __PRETTY_FUNCTION__, trackId, position);
 
-	imports.set_position(trackId, offset);
+	imports.set_position(trackId, position);
 
 	media_player2_player_complete_set_position(interface, invocation);
 	return TRUE;
