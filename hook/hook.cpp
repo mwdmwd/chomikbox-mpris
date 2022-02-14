@@ -6,16 +6,16 @@
 
 #include "app.h"
 
-static void *app;
+static void *playerWindow;
 static ServerCallbacks *callbacks;
 static ServerImports imports;
 
 DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 {
-	if(!app)
+	if(!playerWindow)
 	{
-		printf("FIXME?: saving app from time label hook\n");
-		app = thiz;
+		printf("FIXME?: saving playerWindow from time label hook\n");
+		playerWindow = thiz;
 	}
 
 	callbacks->position_changed(millis * 1000); // millis to micros
@@ -59,15 +59,15 @@ struct
 #undef DETOUR
 };
 
-void EnsureAppHandleAndCallWithApp(void (*function)(void *))
+void EnsureHandleAndCallWithPlayerWindow(void (*function)(void *))
 {
-	if(!app)
+	if(!playerWindow)
 	{
-		printf("WARNING: no app handle\n");
+		printf("WARNING: no playerWindow handle\n");
 		return;
 	}
 
-	function(app);
+	function(playerWindow);
 }
 
 DWORD WINAPI MprisServerThread(LPVOID lpParameter)
@@ -137,20 +137,20 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		    (ServerCallbacks * (*)(void)) GetProcAddress(mprisServer, "get_callbacks");
 		callbacks = get_callbacks();
 
-		imports.play = []() { EnsureAppHandleAndCallWithApp(Play); };
-		imports.pause = []() { EnsureAppHandleAndCallWithApp(Pause); };
-		imports.play_pause = []() { EnsureAppHandleAndCallWithApp(PlayPause); };
+		imports.play = []() { EnsureHandleAndCallWithPlayerWindow(Play); };
+		imports.pause = []() { EnsureHandleAndCallWithPlayerWindow(Pause); };
+		imports.play_pause = []() { EnsureHandleAndCallWithPlayerWindow(PlayPause); };
 		imports.quit = []()
 		{
 			// FIXME use proper quit
 			CreateThread(nullptr, 0, QuitThreadProc, nullptr, 0, nullptr);
 		};
-		imports.next = []() { Next(app); };
-		imports.prev = []() { Prev(app); };
-		imports.set_volume = [](int32_t volume) { SetVolume(app, volume); };
+		imports.next = []() { Next(playerWindow); };
+		imports.prev = []() { Prev(playerWindow); };
+		imports.set_volume = [](int32_t volume) { SetVolume(playerWindow, volume); };
 		imports.seek = [](int64_t position)
 		{
-			Seek(app, position / 1000000); // micros to seconds
+			Seek(playerWindow, position / 1000000); // micros to seconds
 		};
 		imports.set_position = [](char const *trackId, int64_t position)
 		{ imports.seek(position); };
