@@ -117,6 +117,7 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	media_player2_set_supported_mime_types(player, supportedMimeTypes);
 	media_player2_set_supported_uri_schemes(player, supportedUriSchemes);
 	media_player2_set_identity(player, playerIdentity);
+	media_player2_set_can_quit(player, TRUE);
 
 #define SIGNAL(name) g_signal_connect(player, "handle-" #name, G_CALLBACK(handle_##name), NULL)
 	SIGNAL(quit);
