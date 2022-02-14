@@ -21,6 +21,7 @@ static MediaPlayer2 *player;
 static MediaPlayer2Player *playerPlayer;
 
 extern ServerImports imports;
+extern ServerCallbacks callbacks;
 
 static struct
 {
@@ -200,12 +201,12 @@ void state_changed(PlayState state)
 
 void mpris_server_run(void)
 {
-	set_callbacks(&(ServerCallbacks){
+	callbacks = (ServerCallbacks){
 	    .title_changed = title_changed,
 	    .duration_changed = duration_changed,
 	    .position_changed = position_changed,
 	    .state_changed = state_changed,
-	});
+	};
 
 	guint ownerId =
 	    g_bus_own_name(G_BUS_TYPE_SESSION, "org.mpris.MediaPlayer2.chomikbox",

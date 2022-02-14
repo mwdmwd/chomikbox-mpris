@@ -35,9 +35,7 @@ typedef struct
 } ServerCallbacks;
 
 void set_imports(ServerImports *imps);
-
 ServerCallbacks *get_callbacks(void);
-void set_callbacks(ServerCallbacks *cbs);
 
 #ifdef __cplusplus
 }

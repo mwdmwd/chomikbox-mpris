@@ -4,7 +4,7 @@
 #include "interface.h"
 
 ServerImports imports;
-static ServerCallbacks callbacks;
+ServerCallbacks callbacks;
 
 void set_imports(ServerImports *imps)
 {
@@ -14,9 +14,4 @@ void set_imports(ServerImports *imps)
 ServerCallbacks *get_callbacks(void)
 {
 	return &callbacks;
-}
-
-void set_callbacks(ServerCallbacks *cbs)
-{
-	callbacks = *cbs;
 }
