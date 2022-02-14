@@ -8,8 +8,8 @@ struct QString;
 // Detour targets
 DWORD(__thiscall *SetSongTimeLabel)
 (void *, LONGLONG) = (DWORD __thiscall(*)(void *thiz, LONGLONG millis))OFS_SET_SONG_TIME_LABEL;
-void(__thiscall *PlayerWindowStateChanged)(void *, PlayState) =
-    (void __thiscall (*)(void *, PlayState))OFS_PLAYER_WINDOW_STATE_CHANGED;
+void(__thiscall *PlayerWindowStateChanged)(void *, AppPlayState) =
+    (void __thiscall (*)(void *, AppPlayState))OFS_PLAYER_WINDOW_STATE_CHANGED;
 void(__thiscall *TrackFinished)(void *thiz) = (void(__thiscall *)(void *))OFS_TRACK_FINISHED;
 void(__thiscall *TrackChanged)(void *thiz,
                                void *qUrl) = (void(__thiscall *)(void *, void *))OFS_TRACK_CHANGED;
@@ -77,9 +77,9 @@ void *GetQGStreamerPrivate(void *playerWindow)
 	return ((void **)GetQGStreamer(playerWindow))[2];
 }
 
-PlayState GetPlayState(void *thiz)
+AppPlayState GetPlayState(void *thiz)
 {
-	PlayState *pp = (PlayState *)GetQGStreamerPrivate(thiz);
+	AppPlayState *pp = (AppPlayState *)GetQGStreamerPrivate(thiz);
 	return pp[10];
 }
 
@@ -87,16 +87,16 @@ void Play(void *thiz)
 {
 	void **qObject = (void **)thiz;
 
-	PlayState state = GetPlayState(thiz);
+	AppPlayState state = GetPlayState(thiz);
 	printf("play: play state %d\n", state);
 	switch(state)
 	{
-		case PlayState::Stopped:
+		case AppPlayState::Stopped:
 			StartPlaying(thiz);
 			break;
-		case PlayState::Paused:
-		case PlayState::Buffering:
-		case PlayState::UnsupportedFormat:
+		case AppPlayState::Paused:
+		case AppPlayState::Buffering:
+		case AppPlayState::UnsupportedFormat:
 			PlayInternal1(GetQGStreamer(thiz));
 			PlayInternal2(&qObject[90], 1);
 			// PlayInternal3(&qObject[90]);
@@ -110,7 +110,7 @@ void Play(void *thiz)
 void Pause(void *thiz)
 {
 	printf("pause: play state %d\n", GetPlayState(thiz));
-	if(GetPlayState(thiz) == PlayState::Playing)
+	if(GetPlayState(thiz) == AppPlayState::Playing)
 	{
 		PauseInternal(thiz);
 	}

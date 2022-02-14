@@ -23,7 +23,7 @@ DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 	return SetSongTimeLabel(thiz, millis);
 }
 
-static void __thiscall HK_PlayerWindowStateChanged(void *thiz, PlayState state)
+static void __thiscall HK_PlayerWindowStateChanged(void *thiz, AppPlayState state)
 {
 	printf("player window state changed to %d this=%08x\n", state, thiz);
 	return PlayerWindowStateChanged(thiz, state);
