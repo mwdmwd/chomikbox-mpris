@@ -99,7 +99,7 @@ void Play(void *thiz)
 	void **qObject = (void **)thiz;
 
 	AppPlayState state = GetPlayState(thiz);
-	printf("play: play state %d\n", state);
+	printf("play: play state %d\n", (int)state);
 	switch(state)
 	{
 		case AppPlayState::Stopped:
@@ -113,14 +113,14 @@ void Play(void *thiz)
 			PlayInternal3(&qObject[88], qObject[90]);
 			break;
 		default:
-			printf("Don't know how to play from state %d\n", state);
+			printf("Don't know how to play from state %d\n", (int)state);
 			break;
 	}
 }
 
 void Pause(void *thiz)
 {
-	printf("pause: play state %d\n", GetPlayState(thiz));
+	printf("pause: play state %d\n", (int)GetPlayState(thiz));
 	if(GetPlayState(thiz) == AppPlayState::Playing)
 	{
 		PauseInternal(thiz);
@@ -158,7 +158,7 @@ std::string GetFileName(void *qUrl)
 
 	if(!ulen)
 	{
-		printf("Getting string length failed: 0x%08x\n", GetLastError());
+		printf("Getting string length failed: 0x%08lx\n", GetLastError());
 		return "";
 	}
 
@@ -167,7 +167,7 @@ std::string GetFileName(void *qUrl)
 	                              (char *)out.data(), ulen, nullptr, nullptr);
 	if(!ret)
 	{
-		printf("String conversion failed: 0x%08x\n", GetLastError());
+		printf("String conversion failed: 0x%08lx\n", GetLastError());
 		return "";
 	}
 

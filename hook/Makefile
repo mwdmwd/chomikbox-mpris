@@ -1,3 +1,5 @@
+CFLAGS ?= -Wall -Wextra -Wno-unused-parameter -Wno-cast-function-type
+
 LIBS += -lkernel32 -ldetours
 CROSS = i686-w64-mingw32-
 CXX = $(CROSS)g++
