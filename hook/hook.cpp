@@ -33,7 +33,7 @@ static void __thiscall HK_TrackChanged(void *thiz, void *qUrl)
 
 static void __thiscall HK_QueryDuration(void *thiz)
 {
-	callbacks->duration_changed(GetDuration(playerWindow) / 1000); // nanos to micros
+	callbacks->duration_changed(GetDuration(playerWindow));
 	QueryDuration(thiz);
 }
 
@@ -141,13 +141,10 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		imports.next = []() { Next(playerWindow); };
 		imports.prev = []() { Prev(playerWindow); };
 		imports.set_volume = [](int32_t volume) { SetVolume(playerWindow, volume); };
-		imports.seek = [](int64_t offset) {
-
-		};
+		imports.seek = [](int64_t offset)
+		{ SetPosition(playerWindow, GetPosition(playerWindow) + offset); };
 		imports.set_position = [](char const *trackId, int64_t position)
-		{
-			SetPosition(playerWindow, position / 1000000); // micros to seconds
-		};
+		{ SetPosition(playerWindow, position); };
 
 		void (*set_imports)(ServerImports * imports) =
 		    (void (*)(ServerImports *))GetProcAddress(mprisServer, "set_imports");

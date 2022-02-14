@@ -28,6 +28,7 @@ static int(__thiscall *QAbstractSlider_value)(void *thiz);
 static void(__thiscall *QUrl_fileName)(void *thiz, QString *outStr);
 static void(__thiscall *QString_dtor)(QString *thiz);
 static int (*gst_element_query_duration)(void *element, int *format, int64_t *duration);
+static int (*gst_element_query_position)(void *element, int *format, int64_t *cur);
 
 // Other "imports"
 static auto StartPlaying = (void(__thiscall *)(void *thiz))OFS_START_PLAYING;
@@ -80,6 +81,8 @@ int ResolveDynamicImports(void)
 	HMODULE gstreamer = REQUIRE(GetModuleHandle("libgstreamer-0.10.dll"));
 	gst_element_query_duration = (int (*)(void *, int *, int64_t *))REQUIRE(
 	    GetProcAddress(gstreamer, "gst_element_query_duration"));
+	gst_element_query_position = (int (*)(void *, int *, int64_t *))REQUIRE(
+	    GetProcAddress(gstreamer, "gst_element_query_position"));
 
 #undef REQUIRE
 	return 0;
@@ -203,12 +206,20 @@ int64_t GetDuration(void *player)
 	int format = 3;
 	int64_t duration;
 	gst_element_query_duration(element, &format, &duration);
-	return duration;
+	return duration / 1000; // nanos to micros
 }
 
-void SetPosition(void *player, int32_t position)
+void SetPosition(void *player, int64_t position)
 {
-	SetPositionInternal(GetQGStreamerPrivate(player), position);
+	SetPositionInternal(GetQGStreamerPrivate(player), position / 1000000); // micros to seconds
+}
+
+int64_t GetPosition(void *player)
+{
+	int format = 3;
+	int64_t position;
+	gst_element_query_position(GetGstElement(player), &format, &position);
+	return position / 1000; // nanos to micros
 }
 
 void CloseApplication(void *application)

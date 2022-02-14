@@ -27,7 +27,8 @@ void SetVolume(void *player, int volume);
 int GetVolume(void *player);
 std::string GetFileName(void *qUrl);
 int64_t GetDuration(void *player);
-void SetPosition(void *player, int32_t position);
+void SetPosition(void *player, int64_t position);
+int64_t GetPosition(void *player);
 void CloseApplication(void *application);
 
 // Detour targets
