@@ -36,5 +36,6 @@ extern void(__thiscall *TrackChanged)(void *thiz, void *qUrl);
 extern void(__thiscall *QueryDuration)(void *thiz);
 extern void(__thiscall *Application_ctor)(void *thiz, int *argc, char **argv, uint8_t unk);
 extern void *(__thiscall *PlayerWindow_ctor)(void *thiz, uint32_t unk, uint32_t unk2);
+extern void(__thiscall *SetVolumePercentLabel)(void *thiz, int32_t volume);
 
 #endif

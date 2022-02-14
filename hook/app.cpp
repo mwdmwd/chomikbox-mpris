@@ -19,6 +19,8 @@ void(__thiscall *BaseApplication_close)(void *thiz, uint32_t force, uint32_t exi
     (void __thiscall (*)(void *, uint32_t, uint32_t))OFS_BASEAPPLICATION_CLOSE;
 void *(__thiscall *PlayerWindow_ctor)(void *thiz, uint32_t unk, uint32_t unk2) =
     (void *__thiscall (*)(void *, uint32_t, uint32_t))OFS_PLAYER_WINDOW_CTOR;
+void(__thiscall *SetVolumePercentLabel)(void *thiz, int32_t volume) =
+    (void(__thiscall *)(void *, int32_t))OFS_SET_VOLUME_PERCENT_LABEL;
 
 // Imports to be resolved with GetProcAddress
 static void(__thiscall *QAbstractSlider_SetValue)(void *thiz, int value);

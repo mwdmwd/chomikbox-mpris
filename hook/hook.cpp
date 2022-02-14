@@ -52,6 +52,12 @@ static void *__thiscall HK_PlayerWindow_ctor(void *thiz, uint32_t unk, uint32_t 
 	return ret;
 }
 
+static void __thiscall HK_SetVolumePercentLabel(void *thiz, int32_t volume)
+{
+	SetVolumePercentLabel(thiz, volume);
+	callbacks->volume_changed(volume);
+}
+
 struct
 {
 	void **original;
@@ -61,8 +67,9 @@ struct
 	{                                                                                              \
 		(void **)&name, (void *)HK_##name                                                          \
 	}
-    DETOUR(SetSongTimeLabel), DETOUR(PlayerWindowStateChanged), DETOUR(TrackChanged),
-    DETOUR(QueryDuration),    DETOUR(Application_ctor),         DETOUR(PlayerWindow_ctor),
+    DETOUR(SetSongTimeLabel),      DETOUR(PlayerWindowStateChanged), DETOUR(TrackChanged),
+    DETOUR(QueryDuration),         DETOUR(Application_ctor),         DETOUR(PlayerWindow_ctor),
+    DETOUR(SetVolumePercentLabel),
 #undef DETOUR
 };
 
