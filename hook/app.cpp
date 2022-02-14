@@ -32,6 +32,7 @@ static int (*gst_element_query_duration)(void *element, int *format, int64_t *du
 // Other "imports"
 static auto StartPlaying = (void(__thiscall *)(void *thiz))OFS_START_PLAYING;
 static auto PauseInternal = (void __thiscall (*)(void *thiz))OFS_PAUSE_INTERNAL;
+static auto StopInternal = (void __thiscall (*)(void *thiz))OFS_STOP;
 static auto PlayPauseButtonClicked = (void __thiscall (*)(void *thiz))OFS_PLAY_PAUSE_BUTTON_CLICKED;
 static auto PlayInternal1 = (void __thiscall (*)(void *thiz))OFS_PLAY_1;
 static auto PlayInternal2 = (void __thiscall (*)(void *thiz, int))OFS_PLAY_2;
@@ -141,6 +142,11 @@ void Pause(void *player)
 void PlayPause(void *player)
 {
 	PlayPauseButtonClicked(player);
+}
+
+void Stop(void *player)
+{
+	StopInternal(player);
 }
 
 void Next(void *player)

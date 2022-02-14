@@ -77,6 +77,16 @@ METHOD_HANDLER(MediaPlayer2Player, play_pause)
 	return TRUE;
 }
 
+METHOD_HANDLER(MediaPlayer2Player, stop)
+{
+	printf("%s\n", __PRETTY_FUNCTION__);
+
+	imports.stop();
+
+	media_player2_player_complete_stop(interface, invocation);
+	return TRUE;
+}
+
 METHOD_HANDLER(MediaPlayer2Player, next)
 {
 	printf("%s\n", __PRETTY_FUNCTION__);
@@ -157,6 +167,7 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	SIGNAL(play);
 	SIGNAL(pause);
 	SIGNAL(play_pause);
+	SIGNAL(stop);
 	SIGNAL(seek);
 	SIGNAL(set_position);
 	SIGNAL(next);

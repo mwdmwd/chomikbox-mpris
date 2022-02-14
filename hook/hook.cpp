@@ -136,6 +136,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		imports.play = []() { Play(playerWindow); };
 		imports.pause = []() { Pause(playerWindow); };
 		imports.play_pause = []() { PlayPause(playerWindow); };
+		imports.stop = []() { Stop(playerWindow); };
 		imports.quit = []() { CloseApplication(app); };
 		imports.next = []() { Next(playerWindow); };
 		imports.prev = []() { Prev(playerWindow); };

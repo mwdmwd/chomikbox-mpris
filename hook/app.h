@@ -20,6 +20,7 @@ AppPlayState GetPlayState(void *player);
 void Play(void *player);
 void Pause(void *player);
 void PlayPause(void *player);
+void Stop(void *player);
 void Next(void *player);
 void Prev(void *player);
 void SetVolume(void *player, int volume);
