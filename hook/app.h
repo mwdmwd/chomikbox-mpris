@@ -24,7 +24,7 @@ void Next(void *player);
 void Prev(void *player);
 void SetVolume(void *player, int volume);
 std::string GetFileName(void *qUrl);
-int64_t GetDuration(void *qGStremerPrivate);
+int64_t GetDuration(void *player);
 void Seek(void *player, int32_t position);
 void CloseApplication(void *application);
 

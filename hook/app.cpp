@@ -93,9 +93,9 @@ AppPlayState GetPlayState(void *player)
 	return pp[10];
 }
 
-static void *GetGstElement(void *qGStreamerPrivate)
+static void *GetGstElement(void *player)
 {
-	return ((void **)qGStreamerPrivate)[2];
+	return ((void **)GetQGStreamerPrivate(player))[2];
 }
 
 void Play(void *player)
@@ -178,9 +178,9 @@ std::string GetFileName(void *qUrl)
 	return out;
 }
 
-int64_t GetDuration(void *qGStreamerPrivate)
+int64_t GetDuration(void *player)
 {
-	void *element = GetGstElement(qGStreamerPrivate);
+	void *element = GetGstElement(player);
 	int format = 3;
 	int64_t duration;
 	gst_element_query_duration(element, &format, &duration);

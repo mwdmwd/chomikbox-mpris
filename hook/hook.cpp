@@ -39,7 +39,7 @@ static void __thiscall HK_TrackChanged(void *thiz, void *qUrl)
 
 static void __thiscall HK_QueryDuration(void *thiz)
 {
-	callbacks->duration_changed(GetDuration(thiz) / 1000); // nanos to micros
+	callbacks->duration_changed(GetDuration(playerWindow) / 1000); // nanos to micros
 	QueryDuration(thiz);
 }
 
