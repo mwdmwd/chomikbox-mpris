@@ -12,12 +12,6 @@ static ServerImports imports;
 
 DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 {
-	if(!playerWindow)
-	{
-		printf("FIXME?: saving playerWindow from time label hook\n");
-		playerWindow = thiz;
-	}
-
 	callbacks->position_changed(millis * 1000); // millis to micros
 	return SetSongTimeLabel(thiz, millis);
 }
@@ -49,6 +43,12 @@ static void __thiscall HK_Application_ctor(void *thiz, int *argc, char **argv, u
 	Application_ctor(thiz, argc, argv, unk);
 }
 
+static void *__thiscall HK_PlayerWindow_ctor(void *thiz, uint32_t unk, uint32_t unk2)
+{
+	playerWindow = thiz;
+	return PlayerWindow_ctor(thiz, unk, unk2);
+}
+
 struct
 {
 	void **original;
@@ -59,20 +59,9 @@ struct
 		(void **)&name, (void *)HK_##name                                                          \
 	}
     DETOUR(SetSongTimeLabel), DETOUR(PlayerWindowStateChanged), DETOUR(TrackChanged),
-    DETOUR(QueryDuration),    DETOUR(Application_ctor),
+    DETOUR(QueryDuration),    DETOUR(Application_ctor),         DETOUR(PlayerWindow_ctor),
 #undef DETOUR
 };
-
-void EnsureHandleAndCallWithPlayerWindow(void (*function)(void *))
-{
-	if(!playerWindow)
-	{
-		printf("WARNING: no playerWindow handle\n");
-		return;
-	}
-
-	function(playerWindow);
-}
 
 DWORD WINAPI MprisServerThread(LPVOID lpParameter)
 {
@@ -134,9 +123,9 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		    (ServerCallbacks * (*)(void)) GetProcAddress(mprisServer, "get_callbacks");
 		callbacks = get_callbacks();
 
-		imports.play = []() { EnsureHandleAndCallWithPlayerWindow(Play); };
-		imports.pause = []() { EnsureHandleAndCallWithPlayerWindow(Pause); };
-		imports.play_pause = []() { EnsureHandleAndCallWithPlayerWindow(PlayPause); };
+		imports.play = []() { Play(playerWindow); };
+		imports.pause = []() { Pause(playerWindow); };
+		imports.play_pause = []() { PlayPause(playerWindow); };
 		imports.quit = []() { CloseApplication(app); };
 		imports.next = []() { Next(playerWindow); };
 		imports.prev = []() { Prev(playerWindow); };

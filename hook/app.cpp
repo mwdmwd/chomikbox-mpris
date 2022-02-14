@@ -17,6 +17,8 @@ void(__thiscall *Application_ctor)(void *thiz, int *argc, char **argv, uint8_t u
     (void __thiscall (*)(void *, int *, char **, uint8_t))OFS_APPLICATION_CTOR;
 void(__thiscall *BaseApplication_close)(void *thiz, uint32_t force, uint32_t exitCode) =
     (void __thiscall (*)(void *, uint32_t, uint32_t))OFS_BASEAPPLICATION_CLOSE;
+void *(__thiscall *PlayerWindow_ctor)(void *thiz, uint32_t unk, uint32_t unk2) =
+    (void *__thiscall (*)(void *, uint32_t, uint32_t))OFS_PLAYER_WINDOW_CTOR;
 
 // Imports to be resolved with GetProcAddress
 static void(__thiscall *QAbstractSlider_SetValue)(void *thiz, int value);
