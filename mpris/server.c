@@ -166,7 +166,7 @@ void send_metadata(void)
 	g_variant_builder_add(&b, "{sv}", "mpris:trackid", g_variant_new_object_path("/playlist/1"));
 	g_variant_builder_add(&b, "{sv}", "xesam:title", g_variant_new_string(track.title));
 	if(track.duration >= 0)
-		g_variant_builder_add(&b, "{sv}", "xesam:duration", g_variant_new_int64(track.duration));
+		g_variant_builder_add(&b, "{sv}", "mpris:length", g_variant_new_int64(track.duration));
 	media_player2_player_set_metadata(playerPlayer, g_variant_builder_end(&b));
 }
 
