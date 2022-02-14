@@ -30,12 +30,6 @@ static void __thiscall HK_PlayerWindowStateChanged(void *thiz, AppPlayState stat
 	return PlayerWindowStateChanged(thiz, state);
 }
 
-static void __thiscall HK_TrackFinished(void *thiz)
-{
-	printf("track finished\n");
-	return TrackFinished(thiz);
-}
-
 static void __thiscall HK_TrackChanged(void *thiz, void *qUrl)
 {
 	std::string name = GetFileName(qUrl);
@@ -49,7 +43,7 @@ static void __thiscall HK_QueryDuration(void *thiz)
 	QueryDuration(thiz);
 }
 
-struct Detour
+struct
 {
 	void **original;
 	void *detour;
@@ -58,8 +52,9 @@ struct Detour
 	{                                                                                              \
 		(void **)&name, (void *)HK_##name                                                          \
 	}
-    DETOUR(SetSongTimeLabel), DETOUR(PlayerWindowStateChanged),
-    DETOUR(TrackFinished),    DETOUR(TrackChanged),
+    DETOUR(SetSongTimeLabel),
+    DETOUR(PlayerWindowStateChanged),
+    DETOUR(TrackChanged),
     DETOUR(QueryDuration),
 #undef DETOUR
 };

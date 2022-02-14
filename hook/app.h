@@ -29,7 +29,6 @@ int64_t GetDuration(void *thiz);
 // Detour targets
 extern DWORD(__thiscall *SetSongTimeLabel)(void *thiz, LONGLONG millis);
 extern void(__thiscall *PlayerWindowStateChanged)(void *thiz, AppPlayState state);
-extern void(__thiscall *TrackFinished)(void *thiz);
 extern void(__thiscall *TrackChanged)(void *thiz, void *qUrl);
 extern void(__thiscall *QueryDuration)(void *thiz);
 

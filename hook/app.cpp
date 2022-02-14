@@ -10,7 +10,6 @@ DWORD(__thiscall *SetSongTimeLabel)
 (void *, LONGLONG) = (DWORD __thiscall(*)(void *thiz, LONGLONG millis))OFS_SET_SONG_TIME_LABEL;
 void(__thiscall *PlayerWindowStateChanged)(void *, AppPlayState) =
     (void __thiscall (*)(void *, AppPlayState))OFS_PLAYER_WINDOW_STATE_CHANGED;
-void(__thiscall *TrackFinished)(void *thiz) = (void(__thiscall *)(void *))OFS_TRACK_FINISHED;
 void(__thiscall *TrackChanged)(void *thiz,
                                void *qUrl) = (void(__thiscall *)(void *, void *))OFS_TRACK_CHANGED;
 void(__thiscall *QueryDuration)(void *thiz) = (void(__thiscall *)(void *))OFS_QUERY_DURATION;
