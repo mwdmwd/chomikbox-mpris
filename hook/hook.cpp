@@ -25,7 +25,9 @@ DWORD __thiscall HK_SetSongTimeLabel(void *thiz, LONGLONG millis)
 
 static void __thiscall HK_PlayerWindowStateChanged(void *thiz, AppPlayState state)
 {
-	printf("player window state changed to %d this=%08x\n", state, thiz);
+	callbacks->state_changed(state == AppPlayState::Playing  ? PS_PLAYING
+	                         : state == AppPlayState::Paused ? PS_PAUSED
+	                                                         : PS_STOPPED);
 	return PlayerWindowStateChanged(thiz, state);
 }
 
