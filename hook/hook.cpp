@@ -148,6 +148,12 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		imports.next = []() { Next(app); };
 		imports.prev = []() { Prev(app); };
 		imports.set_volume = [](int32_t volume) { SetVolume(app, volume); };
+		imports.seek = [](int64_t position)
+		{
+			Seek(app, position / 1000000); // micros to seconds
+		};
+		imports.set_position = [](char const *trackId, int64_t position)
+		{ imports.seek(position); };
 
 		void (*set_imports)(ServerImports * imports) =
 		    (void (*)(ServerImports *))GetProcAddress(mprisServer, "set_imports");

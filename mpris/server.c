@@ -107,6 +107,16 @@ METHOD_HANDLER_EX(MediaPlayer2Player, seek, gint64 offset)
 	return TRUE;
 }
 
+METHOD_HANDLER_EX(MediaPlayer2Player, set_position, gchar const *trackId, gint64 offset)
+{
+	printf("%s %s %" PRId64 "\n", __PRETTY_FUNCTION__, trackId, offset);
+
+	imports.set_position(trackId, offset);
+
+	media_player2_player_complete_set_position(interface, invocation);
+	return TRUE;
+}
+
 static void change_volume(MediaPlayer2Player *interface, GParamSpec *pspec)
 {
 	imports.set_volume(media_player2_player_get_volume(interface) * 100);
@@ -149,6 +159,7 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	SIGNAL(pause);
 	SIGNAL(play_pause);
 	SIGNAL(seek);
+	SIGNAL(set_position);
 	SIGNAL(next);
 	SIGNAL(previous);
 #undef SIGNAL

@@ -28,6 +28,7 @@ static auto PlayInternal1 = (void __thiscall (*)(void *thiz))OFS_PLAY_1;
 static auto PlayInternal2 = (void __thiscall (*)(void *thiz, int))OFS_PLAY_2;
 static auto PlayInternal3 = (void __thiscall (*)(void *thiz))OFS_PLAY_3;
 static auto NextPrev = (void __thiscall (*)(void *thiz, int previous))OFS_NEXT_PREV;
+static auto SeekInternal = (void __thiscall (*)(void *thiz, int position))OFS_SEEK;
 
 struct QString
 {
@@ -180,4 +181,9 @@ int64_t GetDuration(void *qGStreamerPrivate)
 	int64_t duration;
 	gst_element_query_duration(element, &format, &duration);
 	return duration;
+}
+
+void Seek(void *thiz, int32_t position)
+{
+	SeekInternal(GetQGStreamerPrivate(thiz), position);
 }

@@ -13,6 +13,7 @@ typedef struct
 	void (*pause)(void);
 	void (*play_pause)(void);
 	void (*seek)(int64_t position);
+	void (*set_position)(char const *trackId, int64_t position);
 	void (*quit)(void);
 	void (*next)(void);
 	void (*prev)(void);

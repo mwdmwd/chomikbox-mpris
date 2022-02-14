@@ -25,6 +25,7 @@ void Prev(void *thiz);
 void SetVolume(void *thiz, int volume);
 std::string GetFileName(void *qUrl);
 int64_t GetDuration(void *thiz);
+void Seek(void *thiz, int32_t position);
 
 // Detour targets
 extern DWORD(__thiscall *SetSongTimeLabel)(void *thiz, LONGLONG millis);
