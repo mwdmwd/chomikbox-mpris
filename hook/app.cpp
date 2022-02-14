@@ -13,6 +13,10 @@ void(__thiscall *PlayerWindowStateChanged)(void *, AppPlayState) =
 void(__thiscall *TrackChanged)(void *thiz,
                                void *qUrl) = (void(__thiscall *)(void *, void *))OFS_TRACK_CHANGED;
 void(__thiscall *QueryDuration)(void *thiz) = (void(__thiscall *)(void *))OFS_QUERY_DURATION;
+void(__thiscall *Application_ctor)(void *thiz, int *argc, char **argv, uint8_t unk) =
+    (void __thiscall (*)(void *, int *, char **, uint8_t))OFS_APPLICATION_CTOR;
+void(__thiscall *BaseApplication_close)(void *thiz, uint32_t force, uint32_t exitCode) =
+    (void __thiscall (*)(void *, uint32_t, uint32_t))OFS_BASEAPPLICATION_CLOSE;
 
 // Imports to be resolved with GetProcAddress
 static void(__thiscall *QAbstractSlider_SetValue)(void *thiz, int value);
@@ -186,4 +190,9 @@ int64_t GetDuration(void *qGStreamerPrivate)
 void Seek(void *thiz, int32_t position)
 {
 	SeekInternal(GetQGStreamerPrivate(thiz), position);
+}
+
+void CloseApplication(void *application)
+{
+	BaseApplication_close(application, 0, 0);
 }

@@ -14,5 +14,7 @@
 #define OFS_TRACK_CHANGED ((void *)(EXE_BASE + 0x001f0310))
 #define OFS_QUERY_DURATION ((void *)(EXE_BASE + 0x001f2050))
 #define OFS_SEEK ((void *)(EXE_BASE + 0x001f1e00))
+#define OFS_APPLICATION_CTOR ((void *)(EXE_BASE + 0x00013a80))
+#define OFS_BASEAPPLICATION_CLOSE ((void *)(EXE_BASE + 0x001a9af0))
 
 #endif

@@ -6,7 +6,7 @@
 
 #include "app.h"
 
-static void *playerWindow;
+static void *app, *playerWindow;
 static ServerCallbacks *callbacks;
 static ServerImports imports;
 
@@ -43,6 +43,12 @@ static void __thiscall HK_QueryDuration(void *thiz)
 	QueryDuration(thiz);
 }
 
+static void __thiscall HK_Application_ctor(void *thiz, int *argc, char **argv, uint8_t unk)
+{
+	app = thiz;
+	Application_ctor(thiz, argc, argv, unk);
+}
+
 struct
 {
 	void **original;
@@ -52,10 +58,8 @@ struct
 	{                                                                                              \
 		(void **)&name, (void *)HK_##name                                                          \
 	}
-    DETOUR(SetSongTimeLabel),
-    DETOUR(PlayerWindowStateChanged),
-    DETOUR(TrackChanged),
-    DETOUR(QueryDuration),
+    DETOUR(SetSongTimeLabel), DETOUR(PlayerWindowStateChanged), DETOUR(TrackChanged),
+    DETOUR(QueryDuration),    DETOUR(Application_ctor),
 #undef DETOUR
 };
 
@@ -75,13 +79,6 @@ DWORD WINAPI MprisServerThread(LPVOID lpParameter)
 	void (*mpris_server_run)(void) = (void (*)(void))lpParameter;
 	mpris_server_run();
 	return 0;
-}
-
-DWORD WINAPI QuitThreadProc(LPVOID lpParameter)
-{
-	Sleep(500);                               // Allow some time for the MPRIS response
-	TerminateProcess(GetCurrentProcess(), 0); // FIXME: call the player's quit method instead
-	return 0UL;
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
@@ -140,11 +137,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		imports.play = []() { EnsureHandleAndCallWithPlayerWindow(Play); };
 		imports.pause = []() { EnsureHandleAndCallWithPlayerWindow(Pause); };
 		imports.play_pause = []() { EnsureHandleAndCallWithPlayerWindow(PlayPause); };
-		imports.quit = []()
-		{
-			// FIXME use proper quit
-			CreateThread(nullptr, 0, QuitThreadProc, nullptr, 0, nullptr);
-		};
+		imports.quit = []() { CloseApplication(app); };
 		imports.next = []() { Next(playerWindow); };
 		imports.prev = []() { Prev(playerWindow); };
 		imports.set_volume = [](int32_t volume) { SetVolume(playerWindow, volume); };
