@@ -33,6 +33,7 @@ typedef struct
 	void (*duration_changed)(int64_t duration);
 	void (*position_changed)(int64_t position);
 	void (*state_changed)(PlayState state);
+	void (*volume_changed)(int volume);
 } ServerCallbacks;
 
 void set_imports(ServerImports *imps);

@@ -151,7 +151,6 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 	media_player2_player_set_rate(playerPlayer, 1.0);
 	media_player2_player_set_loop_status(playerPlayer, "None");
 	media_player2_player_set_playback_status(playerPlayer, playbackStatusNames[PS_STOPPED]);
-	media_player2_player_set_volume(playerPlayer, 0.25); // FIXME
 
 #define SIGNAL(name)                                                                               \
 	g_signal_connect(playerPlayer, "handle-" #name, G_CALLBACK(handle_##name), NULL)
@@ -210,6 +209,11 @@ void state_changed(PlayState state)
 	media_player2_player_set_playback_status(playerPlayer, playbackStatusNames[state]);
 }
 
+void volume_changed(int volume)
+{
+	media_player2_player_set_volume(playerPlayer, volume / 100.0);
+}
+
 void mpris_server_run(void)
 {
 	callbacks = (ServerCallbacks){
@@ -217,6 +221,7 @@ void mpris_server_run(void)
 	    .duration_changed = duration_changed,
 	    .position_changed = position_changed,
 	    .state_changed = state_changed,
+	    .volume_changed = volume_changed,
 	};
 
 	guint ownerId =

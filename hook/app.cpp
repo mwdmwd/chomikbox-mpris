@@ -22,6 +22,7 @@ void *(__thiscall *PlayerWindow_ctor)(void *thiz, uint32_t unk, uint32_t unk2) =
 
 // Imports to be resolved with GetProcAddress
 static void(__thiscall *QAbstractSlider_SetValue)(void *thiz, int value);
+static int(__thiscall *QAbstractSlider_value)(void *thiz);
 static void(__thiscall *QUrl_fileName)(void *thiz, QString *outStr);
 static void(__thiscall *QString_dtor)(QString *thiz);
 static int (*gst_element_query_duration)(void *element, int *format, int64_t *duration);
@@ -64,6 +65,8 @@ int ResolveDynamicImports(void)
 	HMODULE qtGui4 = REQUIRE(GetModuleHandle("qtgui4.dll"));
 	QAbstractSlider_SetValue = (void(__thiscall *)(void *, int))REQUIRE(
 	    GetProcAddress(qtGui4, "?setValue@QAbstractSlider@@QAEXH@Z"));
+	QAbstractSlider_value = (int(__thiscall *)(void *))REQUIRE(
+	    GetProcAddress(qtGui4, "?value@QAbstractSlider@@QBEHXZ"));
 
 	HMODULE qtCore4 = REQUIRE(GetModuleHandle("qtcore4.dll"));
 	QUrl_fileName = (void(__thiscall *)(void *, QString *))REQUIRE(
@@ -146,6 +149,12 @@ void Next(void *player)
 void Prev(void *player)
 {
 	NextPrev(player, 1);
+}
+
+int GetVolume(void *player)
+{
+	void **qObject = (void **)player;
+	return QAbstractSlider_value(qObject[58]);
 }
 
 void SetVolume(void *player, int volume)

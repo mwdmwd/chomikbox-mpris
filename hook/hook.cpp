@@ -46,7 +46,10 @@ static void __thiscall HK_Application_ctor(void *thiz, int *argc, char **argv, u
 static void *__thiscall HK_PlayerWindow_ctor(void *thiz, uint32_t unk, uint32_t unk2)
 {
 	playerWindow = thiz;
-	return PlayerWindow_ctor(thiz, unk, unk2);
+
+	void *ret = PlayerWindow_ctor(thiz, unk, unk2);
+	callbacks->volume_changed(GetVolume(playerWindow));
+	return ret;
 }
 
 struct
