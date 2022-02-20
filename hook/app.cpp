@@ -4,6 +4,7 @@
 #include "offsets.h"
 
 struct QString;
+struct QVariant;
 
 // Detour targets
 DWORD(__thiscall *SetSongTimeLabel)
@@ -21,14 +22,20 @@ void *(__thiscall *PlayerWindow_ctor)(void *thiz, uint32_t unk, uint32_t unk2) =
     (void *__thiscall (*)(void *, uint32_t, uint32_t))OFS_PLAYER_WINDOW_CTOR;
 void(__thiscall *SetVolumePercentLabel)(void *thiz, int32_t volume) =
     (void(__thiscall *)(void *, int32_t))OFS_SET_VOLUME_PERCENT_LABEL;
+void(__thiscall *CheckboxStateChanged)(void *thiz, bool checked) =
+    (void(__thiscall *)(void *, bool))OFS_CHECKBOX_STATE_CHANGED;
 
 // Imports to be resolved with GetProcAddress
 static void(__thiscall *QAbstractSlider_SetValue)(void *thiz, int value);
 static int(__thiscall *QAbstractSlider_value)(void *thiz);
 static void(__thiscall *QUrl_fileName)(void *thiz, QString *outStr);
+static void(__cdecl *QString_fromLatin1)(QString *outStr, char const *str, int len);
 static void(__thiscall *QString_dtor)(QString *thiz);
 static int (*gst_element_query_duration)(void *element, int *format, int64_t *duration);
 static int (*gst_element_query_position)(void *element, int *format, int64_t *cur);
+static void(__thiscall *QVariant_bool)(QVariant *thiz, bool value);
+static void(__thiscall *QVariant_dtor)(QVariant *thiz);
+static void(__thiscall *QAbstractButton_setChecked)(void *thiz, bool checked);
 
 // Other "imports"
 static auto StartPlaying = (void(__thiscall *)(void *thiz))OFS_START_PLAYING;
@@ -40,6 +47,11 @@ static auto PlayInternal2 = (void __thiscall (*)(void *thiz, int))OFS_PLAY_2;
 static auto PlayInternal3 = (void __thiscall (*)(void *thiz, void *that))OFS_PLAY_3;
 static auto NextPrev = (void __thiscall (*)(void *thiz, int previous))OFS_NEXT_PREV;
 static auto SetPositionInternal = (void __thiscall (*)(void *thiz, int position))OFS_SET_POSITION;
+static auto WriteConfigValue = (void __thiscall (*)(void *thiz, QString *section, QString *name,
+                                                    QVariant *value))OFS_WRITE_CONFIG_VALUE;
+static auto GetConfigBoolInternal = (bool __thiscall (*)(
+    void *thiz, char const *section, char const *name, bool default_))OFS_GET_CONFIG_BOOL;
+static auto SeedShuffle = (void __thiscall (*)(void *thiz, bool shuffle))OFS_SEED_SHUFFLE;
 
 struct QString
 {
@@ -53,6 +65,16 @@ struct QString
 	~QString()
 	{
 		QString_dtor(this);
+	}
+};
+
+struct QVariant
+{
+	void *data[4]; // should be enough for everybody
+
+	~QVariant()
+	{
+		QVariant_dtor(this);
 	}
 };
 
@@ -71,12 +93,20 @@ int ResolveDynamicImports(void)
 	    GetProcAddress(qtGui4, "?setValue@QAbstractSlider@@QAEXH@Z"));
 	QAbstractSlider_value = (int(__thiscall *)(void *))REQUIRE(
 	    GetProcAddress(qtGui4, "?value@QAbstractSlider@@QBEHXZ"));
+	QAbstractButton_setChecked = (void(__thiscall *)(void *, bool))REQUIRE(
+	    GetProcAddress(qtGui4, "?setChecked@QAbstractButton@@QAEX_N@Z"));
 
 	HMODULE qtCore4 = REQUIRE(GetModuleHandle("qtcore4.dll"));
 	QUrl_fileName = (void(__thiscall *)(void *, QString *))REQUIRE(
 	    GetProcAddress(qtCore4, "?fileName@QUrl@@QBE?AVQString@@XZ"));
+	QString_fromLatin1 = (void(__cdecl *)(QString *, char const *, int))REQUIRE(
+	    GetProcAddress(qtCore4, "?fromLatin1@QString@@SA?AV1@PBDH@Z"));
 	QString_dtor =
 	    (void(__thiscall *)(QString *))REQUIRE(GetProcAddress(qtCore4, "??1QString@@QAE@XZ"));
+	QVariant_bool = (void(__thiscall *)(QVariant *, bool))REQUIRE(
+	    GetProcAddress(qtCore4, "??0QVariant@@QAE@_N@Z"));
+	QVariant_dtor =
+	    (void(__thiscall *)(QVariant *))REQUIRE(GetProcAddress(qtCore4, "??1QVariant@@QAE@XZ"));
 
 	HMODULE gstreamer = REQUIRE(GetModuleHandle("libgstreamer-0.10.dll"));
 	gst_element_query_duration = (int (*)(void *, int *, int64_t *))REQUIRE(
@@ -212,6 +242,56 @@ int64_t GetDuration(void *player)
 void SetPosition(void *player, int64_t position)
 {
 	SetPositionInternal(GetQGStreamerPrivate(player), position / 1000000); // micros to seconds
+}
+
+static void *GetConfig()
+{
+	void **pConfig = (void **)OFS_CONFIG;
+	void *config = *pConfig;
+
+	return config ? config : pConfig;
+}
+
+static bool GetConfigBool(char const *section, char const *name, bool default_)
+{
+	return GetConfigBoolInternal(GetConfig(), section, name, default_);
+}
+
+static void SetConfigBool(char const *section, char const *name, bool value)
+{
+	QVariant variant;
+	QString sectionStr, nameStr;
+
+	QVariant_bool(&variant, value);
+	QString_fromLatin1(&sectionStr, section, -1);
+	QString_fromLatin1(&nameStr, name, -1);
+
+	WriteConfigValue(GetConfig(), &sectionStr, &nameStr, &variant);
+}
+
+bool GetShuffle()
+{
+	return GetConfigBool("player", "shuffle", false);
+}
+
+void SetShuffle(void *player, bool shuffle)
+{
+	void **qObject = (void **)player;
+	SetConfigBool("player", "shuffle", shuffle);
+	SeedShuffle(qObject[88], shuffle);
+	QAbstractButton_setChecked(qObject[64], shuffle);
+}
+
+bool GetRepeat()
+{
+	return GetConfigBool("player", "repeat", false);
+}
+
+void SetRepeat(void *player, bool repeat)
+{
+	void **qObject = (void **)player;
+	SetConfigBool("player", "repeat", repeat);
+	QAbstractButton_setChecked(qObject[63], repeat);
 }
 
 int64_t GetPosition(void *player)

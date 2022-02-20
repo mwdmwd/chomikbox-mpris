@@ -58,6 +58,13 @@ static void __thiscall HK_SetVolumePercentLabel(void *thiz, int32_t volume)
 	callbacks->volume_changed(volume);
 }
 
+static void __thiscall HK_CheckboxStateChanged(void *thiz, bool checked)
+{
+	CheckboxStateChanged(thiz, checked);
+	callbacks->shuffle_changed(GetShuffle());
+	callbacks->repeat_changed(GetRepeat() ? RPT_PLAYLIST : RPT_NONE);
+}
+
 struct
 {
 	void **original;
@@ -69,7 +76,7 @@ struct
 	}
     DETOUR(SetSongTimeLabel),      DETOUR(PlayerWindowStateChanged), DETOUR(TrackChanged),
     DETOUR(QueryDuration),         DETOUR(Application_ctor),         DETOUR(PlayerWindow_ctor),
-    DETOUR(SetVolumePercentLabel),
+    DETOUR(SetVolumePercentLabel), DETOUR(CheckboxStateChanged),
 #undef DETOUR
 };
 
@@ -145,6 +152,8 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved)
 		{ SetPosition(playerWindow, GetPosition(playerWindow) + offset); };
 		imports.set_position = [](char const *trackId, int64_t position)
 		{ SetPosition(playerWindow, position); };
+		imports.set_shuffle = [](bool shuffle) { SetShuffle(playerWindow, shuffle); };
+		imports.set_repeat = [](RepeatType repeat) { SetRepeat(playerWindow, repeat != RPT_NONE); };
 
 		void (*set_imports)(ServerImports * imports) =
 		    (void (*)(ServerImports *))GetProcAddress(mprisServer, "set_imports");

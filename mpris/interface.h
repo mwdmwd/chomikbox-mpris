@@ -5,7 +5,15 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include <stdint.h>
+
+typedef enum
+{
+	RPT_NONE,
+	RPT_TRACK,
+	RPT_PLAYLIST,
+} RepeatType;
 
 typedef struct
 {
@@ -19,6 +27,8 @@ typedef struct
 	void (*next)(void);
 	void (*prev)(void);
 	void (*set_volume)(int32_t volume);
+	void (*set_shuffle)(bool shuffle);
+	void (*set_repeat)(RepeatType repeat);
 } ServerImports;
 
 typedef enum
@@ -35,6 +45,8 @@ typedef struct
 	void (*position_changed)(int64_t position);
 	void (*state_changed)(PlayState state);
 	void (*volume_changed)(int volume);
+	void (*shuffle_changed)(bool shuffle);
+	void (*repeat_changed)(RepeatType repeat);
 } ServerCallbacks;
 
 void set_imports(ServerImports *imps);

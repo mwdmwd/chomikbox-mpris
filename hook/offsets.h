@@ -19,5 +19,10 @@
 #define OFS_BASEAPPLICATION_CLOSE ((void *)(EXE_BASE + 0x001a9af0))
 #define OFS_PLAYER_WINDOW_CTOR ((void *)(EXE_BASE + 0x00d9450))
 #define OFS_SET_VOLUME_PERCENT_LABEL ((void *)(EXE_BASE + 0x000e2090))
+#define OFS_CHECKBOX_STATE_CHANGED ((void *)(EXE_BASE + 0x000e0f20))
+#define OFS_WRITE_CONFIG_VALUE ((void *)(EXE_BASE + 0x000093d0))
+#define OFS_GET_CONFIG_BOOL ((void *)(EXE_BASE + 0x00007510))
+#define OFS_SEED_SHUFFLE ((void *)(EXE_BASE + 0x000f56c0))
+#define OFS_CONFIG ((void *)0x0074ed58)
 
 #endif

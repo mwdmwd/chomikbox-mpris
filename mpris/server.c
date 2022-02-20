@@ -16,6 +16,8 @@ static gchar const *playerIdentity = "ChomikBox";
 
 static char const *playbackStatusNames[] = {
     [PS_STOPPED] = "Stopped", [PS_PAUSED] = "Paused", [PS_PLAYING] = "Playing"};
+static char const *repeatTypeNames[] = {
+    [RPT_NONE] = "None", [RPT_TRACK] = "Track", [RPT_PLAYLIST] = "Playlist"};
 
 static MediaPlayer2 *player;
 static MediaPlayer2Player *playerPlayer;
@@ -132,6 +134,24 @@ static void change_volume(MediaPlayer2Player *interface, GParamSpec *pspec)
 	imports.set_volume(media_player2_player_get_volume(interface) * 100);
 }
 
+static void change_shuffle(MediaPlayer2Player *interface, GParamSpec *pspec)
+{
+	imports.set_shuffle(media_player2_player_get_shuffle(interface));
+}
+
+static void change_loop_status(MediaPlayer2Player *interface, GParamSpec *pspec)
+{
+	gchar const *loopStatus = media_player2_player_get_loop_status(interface);
+	for(size_t i = 0; i < sizeof(repeatTypeNames) / sizeof(repeatTypeNames[0]); ++i)
+	{
+		if(!strcmp(loopStatus, repeatTypeNames[i]))
+		{
+			imports.set_repeat((RepeatType)i);
+			break;
+		}
+	}
+}
+
 void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user_data)
 {
 	printf("name acquired, name='%s'\n", name);
@@ -177,6 +197,9 @@ void name_acquired(GDBusConnection *connection, const gchar *name, gpointer user
 #define NOTIFY(name)                                                                               \
 	g_signal_connect(playerPlayer, "notify::" #name, G_CALLBACK(change_##name), NULL)
 	NOTIFY(volume);
+	NOTIFY(shuffle);
+	// macro not used because of the `-`
+	g_signal_connect(playerPlayer, "notify::loop-status", G_CALLBACK(change_loop_status), NULL);
 #undef NOTIFY
 
 	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(playerPlayer), connection,
@@ -225,6 +248,16 @@ void volume_changed(int volume)
 	media_player2_player_set_volume(playerPlayer, volume / 100.0);
 }
 
+void shuffle_changed(bool shuffle)
+{
+	media_player2_player_set_shuffle(playerPlayer, shuffle);
+}
+
+void repeat_changed(RepeatType repeat)
+{
+	media_player2_player_set_loop_status(playerPlayer, repeatTypeNames[repeat]);
+}
+
 void mpris_server_run(void)
 {
 	callbacks = (ServerCallbacks){
@@ -233,6 +266,8 @@ void mpris_server_run(void)
 	    .position_changed = position_changed,
 	    .state_changed = state_changed,
 	    .volume_changed = volume_changed,
+	    .shuffle_changed = shuffle_changed,
+	    .repeat_changed = repeat_changed,
 	};
 
 	guint ownerId =
